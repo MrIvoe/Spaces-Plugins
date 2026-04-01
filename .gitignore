@@ -1,0 +1,33 @@
+# SimpleFences plugin repository — ignore build artefacts and IDE files
+
+# Build outputs
+*.obj
+*.exe
+*.dll
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.o
+
+# CMake / MSBuild
+build/
+out/
+*.vcxproj.user
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# IDE
+.vs/
+.vscode/
+*.suo
+*.user
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
