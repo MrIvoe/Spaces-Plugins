@@ -20,7 +20,7 @@ PluginManifest ProductivityActionsPlugin::GetManifest() const
     PluginManifest m;
     m.id = L"community.productivity_actions";
     m.displayName = L"Productivity Actions";
-    m.version = L"1.1.1";
+    m.version = L"1.1.2";
     m.description = L"Adds practical multi-step commands for daily fence workflows.";
     m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
@@ -527,5 +527,6 @@ fs::path ProductivityActionsPlugin::BuildUniquePath(const fs::path& target)
 
     return target;
 }
+
 
 

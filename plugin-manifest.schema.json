@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MrIvoe/Simple-Fences-Plugins/plugin-manifest.schema.json",
+  "title": "SimpleFences Plugin Manifest",
+  "type": "object",
+  "required": [
+    "id",
+    "displayName",
+    "version",
+    "description",
+    "author",
+    "minHostVersion",
+    "maxHostVersion",
+    "minHostApiVersion",
+    "maxHostApiVersion",
+    "enabledByDefault",
+    "supportsSettingsPage",
+    "supportsMainContentPage",
+    "icon",
+    "updateChannelId",
+    "capabilities",
+    "repository"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^community\\.[a-z0-9_]+$"
+    },
+    "displayName": { "type": "string", "minLength": 1 },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "author": { "type": "string", "minLength": 1 },
+    "minHostVersion": { "type": "string", "minLength": 1 },
+    "maxHostVersion": { "type": "string", "minLength": 1 },
+    "minHostApiVersion": { "type": "string", "minLength": 1 },
+    "maxHostApiVersion": { "type": "string", "minLength": 1 },
+    "enabledByDefault": { "type": "boolean" },
+    "supportsSettingsPage": { "type": "boolean" },
+    "supportsMainContentPage": { "type": "boolean" },
+    "icon": { "type": "string" },
+    "updateChannelId": { "type": "string", "minLength": 1 },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "repository": { "type": "string", "format": "uri" }
+  },
+  "additionalProperties": false
+}

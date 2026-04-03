@@ -39,5 +39,66 @@ namespace PluginUiPatterns
             std::to_wstring(refreshIntervalSeconds),
             {},
             firstOrder + 1});
+
+        fields.push_back(SettingsFieldDescriptor{
+            L"plugin.ui.color_source",
+            L"Color source",
+            L"Use host resources for plugin UI colors by default. Choose custom only when a plugin explicitly supports custom palettes.",
+            SettingsFieldType::Enum,
+            L"host_resources",
+            {
+                {L"host_resources", L"Host resources (recommended)"},
+                {L"custom", L"Custom plugin colors"},
+            },
+            firstOrder + 2});
+
+        fields.push_back(SettingsFieldDescriptor{
+            L"plugin.ui.use_host_icons",
+            L"Use host icons",
+            L"Prefer host-provided icon and glyph resources for visual consistency.",
+            SettingsFieldType::Bool,
+            L"true",
+            {},
+            firstOrder + 3});
+
+        fields.push_back(SettingsFieldDescriptor{
+            L"plugin.ui.section_style",
+            L"Section style",
+            L"Preferred settings section rendering style.",
+            SettingsFieldType::Enum,
+            L"cards",
+            {
+                {L"cards", L"Cards"},
+                {L"headers", L"Section headers"},
+                {L"compact", L"Compact"},
+            },
+            firstOrder + 4});
+
+        fields.push_back(SettingsFieldDescriptor{
+            L"plugin.ui.standard_margins",
+            L"Use standard margins",
+            L"Apply host standard outer margins for plugin settings content.",
+            SettingsFieldType::Bool,
+            L"true",
+            {},
+            firstOrder + 5});
+
+        fields.push_back(SettingsFieldDescriptor{
+            L"plugin.ui.standard_padding",
+            L"Use standard padding",
+            L"Apply host standard inner padding for plugin settings cards and groups.",
+            SettingsFieldType::Bool,
+            L"true",
+            {},
+            firstOrder + 6});
+
+        fields.push_back(SettingsFieldDescriptor{
+            L"plugin.ui.show_section_headers",
+            L"Show section headers",
+            L"Render standardized section headers above settings groups.",
+            SettingsFieldType::Bool,
+            L"true",
+            {},
+            firstOrder + 7});
     }
 }

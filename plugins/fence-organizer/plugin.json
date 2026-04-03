@@ -1,11 +1,18 @@
 {
   "id": "community.fence_organizer",
   "displayName": "Fence Organizer",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Adds context-aware sorting and cleanup commands that move and organize real fence files.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": false,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": [
     "commands",
     "menu_contributions",
@@ -13,3 +20,4 @@
   ],
   "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins"
 }
+

@@ -1,14 +1,22 @@
 {
   "id": "community.powershell_fence",
   "displayName": "PowerShell Workspace Fence",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Prototype PowerShell workspace fence with persisted startup, admin, view, and safety settings.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": false,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": true,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": [
     "fence_content_provider",
     "settings_pages"
   ],
   "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins"
 }
+

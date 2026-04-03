@@ -18,7 +18,7 @@ PluginManifest SortingCleanupPlugin::GetManifest() const
     PluginManifest m;
     m.id = L"community.fence_sort_cleanup";
     m.displayName = L"Fence Sort and Clean Up";
-    m.version = L"1.1.1";
+    m.version = L"1.1.2";
     m.description = L"Sorts and arranges fence items with optional automation and cleanup tools.";
     m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
@@ -571,5 +571,6 @@ void SortingCleanupPlugin::ApplySortPlan(const FenceMetadata& fence, const std::
     RefreshFenceWithThrottle(fence.id);
     Notify(L"Sort operation completed.");
 }
+
 
 

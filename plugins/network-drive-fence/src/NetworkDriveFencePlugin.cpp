@@ -10,8 +10,10 @@ PluginManifest NetworkDriveFencePlugin::GetManifest() const
     PluginManifest m;
     m.id           = L"community.network_drive_fence";
     m.displayName  = L"Network Drive Fence";
-    m.version = L"1.2.1";
+    m.version = L"1.2.2";
     m.description  = L"Fence content provider for UNC paths and mapped network drives.";
+    m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
+    m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.capabilities = {L"fence_content_provider", L"settings_pages"};
     return m;
 }
@@ -339,5 +341,6 @@ void NetworkDriveFencePlugin::RefreshNetworkFencesWithThrottle() const
         }
     }
 }
+
 
 

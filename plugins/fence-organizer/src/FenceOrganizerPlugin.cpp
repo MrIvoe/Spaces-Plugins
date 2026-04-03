@@ -18,7 +18,7 @@ PluginManifest FenceOrganizerPlugin::GetManifest() const
     PluginManifest m;
     m.id = L"community.fence_organizer";
     m.displayName = L"Fence Organizer";
-    m.version = L"1.2.1";
+    m.version = L"1.2.2";
     m.description = L"Sorting and cleanup toolkit for fence contents using context-aware commands.";
     m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
@@ -691,5 +691,6 @@ void FenceOrganizerPlugin::HandleMoveLarge(const CommandContext& command) const
         LogWarn(L"Move large files failed due to filesystem exception.");
     }
 }
+
 
 

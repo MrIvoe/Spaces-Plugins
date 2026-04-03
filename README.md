@@ -44,6 +44,33 @@ High-value plugin directions include:
 
 All fields registered through `settings_pages` are persisted automatically to `%LOCALAPPDATA%\SimpleFences\settings.json`.
 
+## Standard plugin manifest contract
+
+Every plugin in this repository now follows the same manifest contract surface:
+
+- `id`
+- `displayName`
+- `version`
+- `description`
+- `author`
+- `minHostVersion`
+- `maxHostVersion`
+- `minHostApiVersion`
+- `maxHostApiVersion`
+- `supportsSettingsPage`
+- `supportsMainContentPage`
+- `icon` (optional)
+- `updateChannelId` (optional)
+- `capabilities`
+- `repository`
+
+Notes:
+
+- `supportsSettingsPage` should match whether `settings_pages` is present in `capabilities`.
+- `supportsMainContentPage` is `true` for plugins that provide a primary content experience (for example `fence_content_provider` or `widgets`).
+- `icon` may be empty when no package icon is provided yet.
+- `updateChannelId` defaults to `stable` for normal releases.
+
 ## Shared plugin UI pattern
 
 Plugin settings UI in this repository is host-rendered through `SettingsWindow` in the main app. To keep plugin pages visually cohesive and maintainable, plugins now use a shared helper:
@@ -55,7 +82,17 @@ Current baseline convention:
 - `plugin.show_notifications`
 - `plugin.refresh_interval_seconds`
 
+UI standard convention:
+
+- no hardcoded colors by default; use host resources first
+- standardized margins and padding
+- standardized settings layout and section style
+- standardized section headers/cards
+- host icon/glyph resources first
+
 Use `PluginUiPatterns::AppendBaselineSettingsFields(...)` at the top of each settings page field list so labels, ordering, and descriptions stay consistent across plugins.
+
+The baseline helper now includes shared UI policy keys under `plugin.ui.*`.
 
 ## Included plugins
 
@@ -194,6 +231,56 @@ Before opening a pull request:
 2. build the host repo with your plugin added
 3. verify settings persistence after restart
 4. update the relevant README entries if behavior changed
+
+Local helper:
+
+- `scripts/validate-plugin-manifests.ps1`
+- `plugin-manifest.schema.json`
+
+## Plugin updates: package model (recommended)
+
+Do not model updates as the main app directly reading plugin repository folders.
+Plugins in this repository do not orchestrate self-update behavior.
+The host app is the owner of update checks, package download, staging, verification, and activation.
+
+Recommended flow:
+
+1. Plugin repo builds each plugin into a distributable package.
+2. Plugin repo publishes package artifacts and update metadata.
+3. Main app checks an update manifest feed.
+4. Main app downloads newer package(s).
+5. Main app stages replacements.
+6. Main app loads updated plugin(s) on next launch or safe reload.
+
+Published metadata should include at minimum:
+
+- package file URL
+- version
+- plugin metadata
+- host/API compatibility bounds
+- hash for integrity validation
+
+Example plugin update manifest entry:
+
+```json
+{
+    "pluginId": "ExamplePlugin",
+    "displayName": "Example Plugin",
+    "version": "0.0.014",
+    "author": "MrIvoe",
+    "description": "Example plugin for IVOESimpleFences",
+    "minHostVersion": "0.0.010",
+    "maxHostVersion": "0.1.999",
+    "packageUrl": "https://example.invalid/ExamplePlugin-0.0.014.sfplugin",
+    "sha256": "..."
+}
+```
+
+Repository sample feed file:
+
+- `plugin-manifest.schema.json`
+- `plugin-update-feed.sample.json`
+- `plugin-update-feed.schema.json`
 
 ## Contributing
 

@@ -1,10 +1,21 @@
 {
   "id": "community.template_plugin",
   "displayName": "Template Plugin",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Starter template for a SimpleFences community plugin.",
-  "author": "Community",
-  "minHostVersion": "0.0.009",
-  "capabilities": ["settings_pages"],
+  "author": "SimpleFences Community",
+  "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
+  "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": false,
+  "icon": "",
+  "updateChannelId": "stable",
+  "capabilities": [
+    "settings_pages"
+  ],
   "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins"
 }
+

@@ -50,7 +50,15 @@ Every plugin ships a manifest.
   "version": "1.0.0",
   "description": "Short one-line description visible in the Settings Hub.",
   "author": "Your Name",
-  "minHostVersion": "0.0.009",
+    "minHostVersion": "0.0.012",
+    "maxHostVersion": "0.1.999",
+    "minHostApiVersion": "0.0.012",
+    "maxHostApiVersion": "0.1.999",
+    "enabledByDefault": true,
+    "supportsSettingsPage": true,
+    "supportsMainContentPage": false,
+    "icon": "",
+    "updateChannelId": "stable",
   "capabilities": ["settings_pages"],
   "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins"
 }
@@ -66,7 +74,16 @@ Every plugin ships a manifest.
 | `description` | string | Short summary of the plugin. |
 | `author` | string | Plugin author or organization. |
 | `minHostVersion` | string | Minimum host version your plugin expects. Keep this aligned with the host branch you tested. |
+| `maxHostVersion` | string | Maximum host version the plugin is validated for. |
+| `minHostApiVersion` | string | Minimum plugin API contract supported by the plugin build. |
+| `maxHostApiVersion` | string | Maximum plugin API contract supported by the plugin build. |
+| `enabledByDefault` | bool | Whether the host should enable the plugin on first install. |
+| `supportsSettingsPage` | bool | Whether the plugin contributes settings UI pages. |
+| `supportsMainContentPage` | bool | Whether the plugin provides a main fence content experience. |
+| `icon` | string | Optional icon path or package-relative icon id. |
+| `updateChannelId` | string | Optional release channel id such as `stable` or `preview`. |
 | `capabilities` | array | One or more capability strings. |
+| `repository` | string | Source repository URL for plugin metadata and docs. |
 
 ### Capability choices
 
@@ -219,6 +236,16 @@ Recommended baseline keys on every plugin settings surface:
 
 This keeps plugin configuration pages visually and behaviorally aligned with host expectations.
 
+Standard UI guidance:
+
+- no hardcoded colors by default; use host resources first
+- standard margins and padding
+- standard settings layout
+- standard section headers/cards
+- host icons/resources first
+
+The shared baseline helper now exposes UI policy fields under `plugin.ui.*` to keep this consistent.
+
 ## 6. Naming conventions
 
 | Thing | Convention |
@@ -300,3 +327,32 @@ If you build a similar plugin, keep file operations defensive:
 2. verify the backing folder exists and is accessible
 3. catch filesystem exceptions and log diagnostics
 4. avoid destructive operations without confirmation settings
+
+## 11. Recommended plugin update model
+
+Use package distribution and manifest-based updates. Avoid direct consumption of plugin repository folders by the main app.
+
+Recommended lifecycle:
+
+1. Build each plugin into a package artifact.
+2. Publish package + version + metadata + compatibility + manifest JSON.
+3. Main app reads manifest feed and checks compatibility.
+4. Main app downloads and verifies package hash.
+5. Main app stages replacement.
+6. Main app activates update on next launch or safe reload.
+
+Minimal update entry:
+
+```json
+{
+    "pluginId": "ExamplePlugin",
+    "displayName": "Example Plugin",
+    "version": "0.0.014",
+    "author": "MrIvoe",
+    "description": "Example plugin for IVOESimpleFences",
+    "minHostVersion": "0.0.010",
+    "maxHostVersion": "0.1.999",
+    "packageUrl": "https://example.invalid/ExamplePlugin-0.0.014.sfplugin",
+    "sha256": "..."
+}
+```

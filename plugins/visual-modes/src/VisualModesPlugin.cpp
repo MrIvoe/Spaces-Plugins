@@ -84,7 +84,7 @@ PluginManifest VisualModesPlugin::GetManifest() const
     PluginManifest m;
     m.id = L"community.visual_modes";
     m.displayName = L"Visual Modes";
-    m.version = L"1.1.5";
+    m.version = L"1.1.6";
     m.description = L"Applies global or per-fence visual behavior presets.";
     m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
@@ -145,10 +145,10 @@ void VisualModesPlugin::RegisterSettings() const
     page.fields.push_back(SettingsFieldDescriptor{L"theme.source", L"Theme source", L"Theme catalog source used by this plugin.", SettingsFieldType::Enum, L"win32_theme_system", {{L"win32_theme_system", L"Win32ThemeSystem"}}, 35});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.win32.display_name", L"Win32 theme display name", L"Normalized Win32ThemeSystem display name for host-side theme bridge integration.", SettingsFieldType::String, L"Graphite Office", {}, 36});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.win32.catalog_version", L"Win32 theme catalog version", L"Catalog contract version emitted for host bridge consumers.", SettingsFieldType::String, L"2026.04", {}, 37});
-    page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.background", L"Background color", L"Custom preset background color (#RRGGBB).", SettingsFieldType::String, L"#1F2530", {}, 40});
-    page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.header", L"Header color", L"Custom preset header color (#RRGGBB).", SettingsFieldType::String, L"#223247", {}, 50});
-    page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.border", L"Border color", L"Custom preset border color (#RRGGBB).", SettingsFieldType::String, L"#3E4A5F", {}, 60});
-    page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.text", L"Text color", L"Custom preset text color (#RRGGBB).", SettingsFieldType::String, L"#E4ECF7", {}, 70});
+    page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.background", L"Background color", L"Custom preset background color (#RRGGBB). Leave blank to use host resources.", SettingsFieldType::String, L"", {}, 40});
+    page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.header", L"Header color", L"Custom preset header color (#RRGGBB). Leave blank to use host resources.", SettingsFieldType::String, L"", {}, 50});
+    page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.border", L"Border color", L"Custom preset border color (#RRGGBB). Leave blank to use host resources.", SettingsFieldType::String, L"", {}, 60});
+    page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.text", L"Text color", L"Custom preset text color (#RRGGBB). Leave blank to use host resources.", SettingsFieldType::String, L"", {}, 70});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.effects.transparency", L"Enable transparency", L"Enable transparent visual treatment when supported.", SettingsFieldType::Bool, L"false", {}, 80});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.keep_title_bar_visible", L"Keep title bar visible", L"Prevent presets from combining rollup and transparency in a way that can fully hide the fence.", SettingsFieldType::Bool, L"true", {}, 85});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.effects.opacity_percent", L"Opacity percent", L"Window opacity percent for custom and glass presets.", SettingsFieldType::Int, L"88", {}, 90});
@@ -513,5 +513,6 @@ void VisualModesPlugin::LogInfo(const std::wstring& message) const
         m_context.diagnostics->Info(L"[VisualModes] " + message);
     }
 }
+
 
 

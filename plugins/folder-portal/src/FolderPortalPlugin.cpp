@@ -24,7 +24,7 @@ PluginManifest FolderPortalPlugin::GetManifest() const
     PluginManifest m;
     m.id = L"community.folder_portal";
     m.displayName = L"Folder Portal";
-    m.version = L"1.2.1";
+    m.version = L"1.2.2";
     m.description = L"Fence content provider that mirrors an existing source folder with health-aware state updates.";
     m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
@@ -638,4 +638,5 @@ void FolderPortalPlugin::UpdatePortalHealth(const FenceMetadata& fence) const
 
     m_context.appCommands->UpdateFenceContentState(fence.id, L"ready", L"");
 }
+
 

@@ -10,8 +10,10 @@ PluginManifest DarkGlassThemePlugin::GetManifest() const
     PluginManifest m;
     m.id             = L"community.dark_glass_theme";
     m.displayName    = L"Dark Glass Theme";
-    m.version = L"1.2.3";
+    m.version = L"1.2.4";
     m.description    = L"Translucent dark theme for fence windows with a frosted-glass look.";
+    m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
+    m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.enabledByDefault = true;
     m.capabilities   = {L"appearance", L"settings_pages", L"commands", L"tray_contributions"};
     return m;
@@ -80,8 +82,8 @@ bool DarkGlassThemePlugin::Initialize(const PluginContext& context)
     page.fields.push_back(SettingsFieldDescriptor{
         L"dark_glass.style.tint_hex",
         L"Tint color",
-        L"Optional hex tint such as #1C2430. Leave blank to use the default dark tint.",
-        SettingsFieldType::String, L"#1C2430", {}, 60
+        L"Optional hex tint such as #1C2430. Leave blank to use host resource colors.",
+        SettingsFieldType::String, L"", {}, 60
     });
 
     page.fields.push_back(SettingsFieldDescriptor{
@@ -422,5 +424,6 @@ void DarkGlassThemePlugin::ApplyThemeToAllFences(bool bypassThrottle) const
         m_context.appCommands->RefreshFence(id);
     }
 }
+
 
 

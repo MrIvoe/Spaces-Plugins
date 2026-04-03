@@ -1,14 +1,22 @@
 {
   "id": "community.network_drive_fence",
   "displayName": "Network Drive Fence",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A fence content provider that maps a UNC path or mapped network drive as a browseable folder fence.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": true,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": [
     "fence_content_provider",
     "settings_pages"
   ],
   "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins"
 }
+

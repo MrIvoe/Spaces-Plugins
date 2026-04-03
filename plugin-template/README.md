@@ -25,6 +25,27 @@ The template uses `PluginUiPatterns::AppendBaselineSettingsFields(...)` so new p
 - `plugin.show_notifications`
 - `plugin.refresh_interval_seconds`
 
+The shared baseline also includes standardized UI policy keys under `plugin.ui.*` so new plugins default to:
+
+- host resources first for colors/icons
+- standard margins/padding
+- standard section headers/cards
+
+## Standard manifest checklist
+
+Keep these fields in your copied `plugin.json`:
+
+- `id`, `displayName`, `version`, `description`, `author`
+- `minHostVersion`, `maxHostVersion`
+- `minHostApiVersion`, `maxHostApiVersion`
+- `supportsSettingsPage`, `supportsMainContentPage`
+- optional `icon`, optional `updateChannelId`
+- `capabilities`, `repository`
+
+## Update model
+
+Ship packaged plugin artifacts and publish update metadata/manifest JSON. Do not rely on the main app reading plugin repository folders directly.
+
 ## Recommended next step
 
 If your plugin adds a new fence content type, follow the content-provider example in [PLUGIN_GUIDE.md](../PLUGIN_GUIDE.md) and register both `contentType` and `providerId` explicitly.

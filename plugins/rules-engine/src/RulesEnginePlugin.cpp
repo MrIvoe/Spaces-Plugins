@@ -100,7 +100,7 @@ PluginManifest RulesEnginePlugin::GetManifest() const
     PluginManifest m;
     m.id = L"community.rules_engine";
     m.displayName = L"Rules Engine";
-    m.version = L"1.1.1";
+    m.version = L"1.1.2";
     m.description = L"Routes and classifies items using ordered matching rules.";
     m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
@@ -420,5 +420,6 @@ void RulesEnginePlugin::LogWarn(const std::wstring& message) const
         m_context.diagnostics->Warn(L"[RulesEngine] " + message);
     }
 }
+
 
 

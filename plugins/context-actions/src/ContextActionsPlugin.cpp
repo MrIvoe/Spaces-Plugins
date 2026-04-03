@@ -12,7 +12,7 @@ PluginManifest ContextActionsPlugin::GetManifest() const
     PluginManifest m;
     m.id = L"community.context_actions";
     m.displayName = L"Context Actions";
-    m.version = L"1.2.1";
+    m.version = L"1.2.2";
     m.description = L"Context-aware right-click actions for desktop, fence, and item workflows.";
     m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
@@ -360,5 +360,6 @@ void ContextActionsPlugin::LogInfo(const std::wstring& message) const
         m_context.diagnostics->Info(L"[ContextActions] " + message);
     }
 }
+
 
 

@@ -17,6 +17,65 @@ Supported settings field types:
 - `String`
 - `Enum`
 
+## Standard plugin manifest fields
+
+All plugins should expose a consistent metadata surface:
+
+- `id`
+- `displayName`
+- `version`
+- `description`
+- `author`
+- `minHostVersion`
+- `maxHostVersion`
+- `minHostApiVersion`
+- `maxHostApiVersion`
+- `supportsSettingsPage`
+- `supportsMainContentPage`
+- optional `icon`
+- optional `updateChannelId`
+- `capabilities`
+- `repository`
+
+## UI standard
+
+- no hardcoded colors by default
+- host resources first
+- standard margins and padding
+- standard settings layout
+- standard section headers/cards
+
+Use the shared helper in `plugins/shared/PluginUiPatterns.h` and keep plugin-specific pages aligned with host layout conventions.
+
+## Recommended plugin update model
+
+Use package publishing + update manifest feed, not direct repository folder consumption.
+
+Recommended flow:
+
+1. Build plugin packages in this repo.
+2. Publish package file + metadata + compatibility + manifest JSON.
+3. Main app checks manifest feed.
+4. Main app downloads newer package.
+5. Main app stages replacement.
+6. Main app loads update on next launch or safe reload.
+
+Example update manifest entry:
+
+```json
+{
+  "pluginId": "ExamplePlugin",
+  "displayName": "Example Plugin",
+  "version": "0.0.014",
+  "author": "MrIvoe",
+  "description": "Example plugin for IVOESimpleFences",
+  "minHostVersion": "0.0.010",
+  "maxHostVersion": "0.1.999",
+  "packageUrl": "https://example.invalid/ExamplePlugin-0.0.014.sfplugin",
+  "sha256": "..."
+}
+```
+
 ## Folder Portal Catalog
 
 ### Folder Portal Manifest
@@ -29,7 +88,14 @@ Supported settings field types:
   "description": "Displays external folder contents inside fences without moving source files.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": true,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": ["fence_content_provider", "commands", "tray_contributions", "settings_pages"]
 }
 ```
@@ -91,7 +157,14 @@ Supported settings field types:
   "description": "Sorts and arranges fence items with optional automation and presets.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": false,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": ["commands", "tray_contributions", "settings_pages", "desktop_context"]
 }
 ```
@@ -137,7 +210,14 @@ Supported settings field types:
   "description": "Routes and classifies items using ordered matching rules.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": false,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": ["commands", "settings_pages", "tray_contributions"]
 }
 ```
@@ -178,7 +258,14 @@ Supported settings field types:
   "description": "Applies global or per-fence themes and visual behavior presets.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": false,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": ["appearance", "commands", "tray_contributions", "settings_pages"]
 }
 ```
@@ -222,7 +309,14 @@ Supported settings field types:
   "description": "Adds practical multi-step commands for daily fence workflows.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": false,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": ["commands", "tray_contributions", "settings_pages", "desktop_context"]
 }
 ```
@@ -262,7 +356,14 @@ Supported settings field types:
   "description": "Provides embeddable utility widgets with bounded refresh and persisted state.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": true,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": ["widgets", "commands", "settings_pages", "tray_contributions"]
 }
 ```
@@ -302,7 +403,14 @@ Supported settings field types:
   "description": "Shows provider-backed virtual item lists from external and generated sources.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": true,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": ["fence_content_provider", "commands", "settings_pages", "tray_contributions"]
 }
 ```
@@ -346,7 +454,14 @@ Supported settings field types:
   "description": "Adds context-aware right-click actions for desktop, fences, and items.",
   "author": "SimpleFences Community",
   "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
   "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": false,
+  "icon": "",
+  "updateChannelId": "stable",
   "capabilities": ["commands", "desktop_context", "settings_pages"]
 }
 ```

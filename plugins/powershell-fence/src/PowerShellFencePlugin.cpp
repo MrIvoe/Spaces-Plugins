@@ -10,8 +10,10 @@ PluginManifest PowerShellFencePlugin::GetManifest() const
     PluginManifest m;
     m.id               = L"community.powershell_fence";
     m.displayName      = L"PowerShell Workspace Fence";
-    m.version = L"0.2.1";
+    m.version = L"0.2.2";
     m.description      = L"Prototype PowerShell workspace fence with persisted startup, admin, view, and safety controls.";
+    m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
+    m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.enabledByDefault = false;
     m.capabilities     = {L"fence_content_provider", L"settings_pages"};
     return m;
@@ -416,3 +418,4 @@ void PowerShellFencePlugin::RefreshWorkspaceFencesWithThrottle() const
         }
     }
 }
+

@@ -10,7 +10,7 @@ PluginManifest WidgetsPlusPlugin::GetManifest() const
     PluginManifest m;
     m.id = L"community.widgets_plus";
     m.displayName = L"Widgets Plus";
-    m.version = L"1.0.1";
+    m.version = L"1.0.2";
     m.description = L"Provides embeddable utility widgets with bounded refresh and persisted state.";
     m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
@@ -216,5 +216,6 @@ void WidgetsPlusPlugin::LogInfo(const std::wstring& message) const
         m_context.diagnostics->Info(L"[WidgetsPlus] " + message);
     }
 }
+
 
 

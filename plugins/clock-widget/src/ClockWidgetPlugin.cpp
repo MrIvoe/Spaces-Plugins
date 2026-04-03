@@ -9,8 +9,10 @@ PluginManifest ClockWidgetPlugin::GetManifest() const
     PluginManifest m;
     m.id           = L"community.clock_widget";
     m.displayName  = L"Clock Widget";
-    m.version = L"1.2.1";
+    m.version = L"1.2.2";
     m.description  = L"Configurable digital, analogue, and dashboard clock widget for a fence panel.";
+    m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
+    m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.capabilities = {L"widgets", L"settings_pages"};
     return m;
 }
@@ -321,5 +323,6 @@ void ClockWidgetPlugin::RefreshWidgetPanelsWithThrottle() const
         }
     }
 }
+
 
 

@@ -26,7 +26,7 @@ PluginManifest ExternalProviderPlugin::GetManifest() const
     PluginManifest m;
     m.id = L"community.external_provider";
     m.displayName = L"External Provider Fences";
-    m.version = L"1.0.1";
+    m.version = L"1.0.2";
     m.description = L"Shows provider-backed virtual item lists from external and generated sources.";
     m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
     m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
@@ -419,5 +419,6 @@ void ExternalProviderPlugin::LogWarn(const std::wstring& message) const
         m_context.diagnostics->Warn(L"[ExternalProvider] " + message);
     }
 }
+
 
 
