@@ -1,0 +1,15 @@
+{
+  "id": "community.widgets_plus",
+  "displayName": "Widgets Plus",
+  "version": "1.0.0",
+  "description": "Provides embeddable utility widgets with bounded refresh and persisted state.",
+  "author": "SimpleFences Community",
+  "minHostVersion": "0.0.012",
+  "enabledByDefault": true,
+  "capabilities": [
+    "widgets",
+    "commands",
+    "settings_pages",
+    "tray_contributions"
+  ]
+}

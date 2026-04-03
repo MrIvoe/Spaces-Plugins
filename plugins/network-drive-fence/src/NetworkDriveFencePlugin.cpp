@@ -17,6 +17,8 @@ PluginManifest NetworkDriveFencePlugin::GetManifest() const
 
 bool NetworkDriveFencePlugin::Initialize(const PluginContext& context)
 {
+    m_context = context;
+
     // Register the content provider type so fences can use it.
     if (context.fenceExtensionRegistry)
     {
@@ -36,6 +38,9 @@ bool NetworkDriveFencePlugin::Initialize(const PluginContext& context)
         page.pageId   = L"net_fence.general";
         page.title    = L"Network Drive";
         page.order    = 10;
+
+        page.fields.push_back(SettingsFieldDescriptor{L"plugin.show_notifications", L"Show notifications", L"Emit user-facing notification events to diagnostics.", SettingsFieldType::Bool, L"false", {}, 1});
+        page.fields.push_back(SettingsFieldDescriptor{L"plugin.refresh_interval_seconds", L"Refresh interval (s)", L"Minimum interval between network-drive sync refresh operations.", SettingsFieldType::Int, L"60", {}, 2});
 
         page.fields.push_back(SettingsFieldDescriptor{
             L"net_fence.general.default_path",
@@ -206,7 +211,81 @@ bool NetworkDriveFencePlugin::Initialize(const PluginContext& context)
         context.settingsRegistry->RegisterPage(std::move(accessPage));
     }
 
+    RefreshNetworkFencesWithThrottle();
+    Notify(L"Network Drive provider initialized.");
+
     return true;
 }
 
-void NetworkDriveFencePlugin::Shutdown() {}
+void NetworkDriveFencePlugin::Shutdown()
+{
+    Notify(L"Network Drive provider shutdown.");
+}
+
+bool NetworkDriveFencePlugin::GetBool(const std::wstring& key, bool fallback) const
+{
+    if (!m_context.settingsRegistry)
+    {
+        return fallback;
+    }
+
+    return m_context.settingsRegistry->GetValue(key, fallback ? L"true" : L"false") == L"true";
+}
+
+int NetworkDriveFencePlugin::GetInt(const std::wstring& key, int fallback) const
+{
+    if (!m_context.settingsRegistry)
+    {
+        return fallback;
+    }
+
+    try
+    {
+        return std::stoi(m_context.settingsRegistry->GetValue(key, std::to_wstring(fallback)));
+    }
+    catch (...)
+    {
+        return fallback;
+    }
+}
+
+void NetworkDriveFencePlugin::Notify(const std::wstring& message) const
+{
+    if (!GetBool(L"plugin.show_notifications", false) || !m_context.diagnostics)
+    {
+        return;
+    }
+
+    m_context.diagnostics->Info(L"[NetworkDriveFence][Notification] " + message);
+}
+
+void NetworkDriveFencePlugin::RefreshNetworkFencesWithThrottle() const
+{
+    if (!m_context.appCommands)
+    {
+        return;
+    }
+
+    int seconds = GetInt(L"plugin.refresh_interval_seconds", 60);
+    if (seconds < 1)
+    {
+        seconds = 1;
+    }
+
+    const auto now = std::chrono::steady_clock::now();
+    if (m_lastSyncAt.time_since_epoch().count() != 0 && (now - m_lastSyncAt) < std::chrono::seconds(seconds))
+    {
+        return;
+    }
+
+    m_lastSyncAt = now;
+    const auto ids = m_context.appCommands->GetAllFenceIds();
+    for (const auto& id : ids)
+    {
+        const FenceMetadata fence = m_context.appCommands->GetFenceMetadata(id);
+        if (fence.contentType == L"network_drive")
+        {
+            m_context.appCommands->RefreshFence(id);
+        }
+    }
+}

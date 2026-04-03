@@ -12,6 +12,11 @@ This plugin is intentionally a prototype. It registers a PowerShell-oriented fen
 - declares startup, view, and safety settings
 - gives the host a stable provider id and content type for future persistence and UI wiring
 
+## Settings
+
+- `plugin.show_notifications`: emits notification events to diagnostics when enabled
+- `plugin.refresh_interval_seconds`: throttles workspace fence refresh operations
+
 ## What the host still needs
 
 - a child-window or terminal-host surface inside a fence

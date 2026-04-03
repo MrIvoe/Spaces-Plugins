@@ -1,0 +1,16 @@
+{
+  "id": "community.folder_portal",
+  "displayName": "Folder Portal",
+  "version": "1.2.0",
+  "description": "Create fences backed by existing folders with provider callbacks and health-aware state updates.",
+  "author": "SimpleFences Community",
+  "minHostVersion": "0.0.012",
+  "enabledByDefault": true,
+  "capabilities": [
+    "fence_content_provider",
+    "commands",
+    "menu_contributions",
+    "tray_contributions",
+    "settings_pages"
+  ]
+}

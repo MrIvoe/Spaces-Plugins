@@ -260,3 +260,29 @@ Examples:
 - portal-style providers need non-file content materialization hooks
 
 If your idea depends on one of those gaps, submit the plugin scaffold here and open a matching host issue so the contract work is tracked explicitly.
+
+## 10. Pattern: fence organization plugins
+
+A high-value plugin pattern is organization and cleanup tooling that operates on fence backing folders.
+
+The `fence-organizer` sample demonstrates this architecture:
+
+- add fence-context menu items through `MenuContributionRegistry`
+- route each menu action through `CommandDispatcher`
+- expose user preferences through `PluginSettingsRegistry`
+- query the active fence through `IApplicationCommands` fence metadata methods
+- perform file operations in plugin code with safe error handling and diagnostics
+
+Why this pattern works well:
+
+- the host remains lean and generic
+- plugin behavior is isolated and replaceable
+- future plugins can reuse the same host query contract
+- failures are local to the plugin and logged cleanly
+
+If you build a similar plugin, keep file operations defensive:
+
+1. verify active fence metadata exists before operating
+2. verify the backing folder exists and is accessible
+3. catch filesystem exceptions and log diagnostics
+4. avoid destructive operations without confirmation settings

@@ -18,6 +18,8 @@ PluginManifest PowerShellFencePlugin::GetManifest() const
 
 bool PowerShellFencePlugin::Initialize(const PluginContext& context)
 {
+    m_context = context;
+
     if (context.fenceExtensionRegistry)
     {
         FenceContentProviderDescriptor descriptor;
@@ -38,6 +40,9 @@ bool PowerShellFencePlugin::Initialize(const PluginContext& context)
     startupPage.pageId   = L"ps_fence.startup";
     startupPage.title    = L"Startup";
     startupPage.order    = 10;
+
+    startupPage.fields.push_back(SettingsFieldDescriptor{L"plugin.show_notifications", L"Show notifications", L"Emit user-facing notification events to diagnostics.", SettingsFieldType::Bool, L"false", {}, 1});
+    startupPage.fields.push_back(SettingsFieldDescriptor{L"plugin.refresh_interval_seconds", L"Refresh interval (s)", L"Minimum interval between workspace fence refresh operations.", SettingsFieldType::Int, L"60", {}, 2});
 
     startupPage.fields.push_back(SettingsFieldDescriptor{
         L"ps_fence.startup.mode",
@@ -270,7 +275,80 @@ bool PowerShellFencePlugin::Initialize(const PluginContext& context)
 
     context.settingsRegistry->RegisterPage(std::move(safetyPage));
 
+    RefreshWorkspaceFencesWithThrottle();
+    Notify(L"PowerShell workspace provider initialized.");
     return true;
 }
 
-void PowerShellFencePlugin::Shutdown() {}
+void PowerShellFencePlugin::Shutdown()
+{
+    Notify(L"PowerShell workspace provider shutdown.");
+}
+
+bool PowerShellFencePlugin::GetBool(const std::wstring& key, bool fallback) const
+{
+    if (!m_context.settingsRegistry)
+    {
+        return fallback;
+    }
+
+    return m_context.settingsRegistry->GetValue(key, fallback ? L"true" : L"false") == L"true";
+}
+
+int PowerShellFencePlugin::GetInt(const std::wstring& key, int fallback) const
+{
+    if (!m_context.settingsRegistry)
+    {
+        return fallback;
+    }
+
+    try
+    {
+        return std::stoi(m_context.settingsRegistry->GetValue(key, std::to_wstring(fallback)));
+    }
+    catch (...)
+    {
+        return fallback;
+    }
+}
+
+void PowerShellFencePlugin::Notify(const std::wstring& message) const
+{
+    if (!GetBool(L"plugin.show_notifications", false) || !m_context.diagnostics)
+    {
+        return;
+    }
+
+    m_context.diagnostics->Info(L"[PowerShellFence][Notification] " + message);
+}
+
+void PowerShellFencePlugin::RefreshWorkspaceFencesWithThrottle() const
+{
+    if (!m_context.appCommands)
+    {
+        return;
+    }
+
+    int seconds = GetInt(L"plugin.refresh_interval_seconds", 60);
+    if (seconds < 1)
+    {
+        seconds = 1;
+    }
+
+    const auto now = std::chrono::steady_clock::now();
+    if (m_lastSyncAt.time_since_epoch().count() != 0 && (now - m_lastSyncAt) < std::chrono::seconds(seconds))
+    {
+        return;
+    }
+
+    m_lastSyncAt = now;
+    const auto ids = m_context.appCommands->GetAllFenceIds();
+    for (const auto& id : ids)
+    {
+        const FenceMetadata fence = m_context.appCommands->GetFenceMetadata(id);
+        if (fence.contentType == L"powershell_workspace")
+        {
+            m_context.appCommands->RefreshFence(id);
+        }
+    }
+}

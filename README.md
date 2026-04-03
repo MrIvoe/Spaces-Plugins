@@ -15,6 +15,8 @@ That means this repository should do two things well:
 1. provide API-aligned sample plugins that compile cleanly against the host
 2. make it easy for contributors to copy a template and extend the platform safely
 
+For production-oriented plugin planning, see [PLUGIN_CATALOG.md](PLUGIN_CATALOG.md).
+
 ## Why this repo exists
 
 SimpleFences is a lightweight Win32 desktop organizer with real fence windows and real backing folders. This repo is the community layer around that app.
@@ -50,6 +52,38 @@ All fields registered through `settings_pages` are persisted automatically to `%
 | [plugins/dark-glass-theme](plugins/dark-glass-theme) | `appearance`, `settings_pages` | Sample | A translucent dark-glass theme with more tunable style controls |
 | [plugins/network-drive-fence](plugins/network-drive-fence) | `fence_content_provider`, `settings_pages` | Sample | A network path fence provider with reconnect and offline behavior settings |
 | [plugins/powershell-fence](plugins/powershell-fence) | `fence_content_provider`, `settings_pages` | Prototype | A PowerShell workspace fence concept with startup, view, and security settings |
+| [plugins/fence-organizer](plugins/fence-organizer) | `commands`, `menu_contributions`, `settings_pages` | Production | Sorting, grouping, and file analysis commands for organizing fence contents |
+| [plugins/folder-portal](plugins/folder-portal) | `fence_content_provider`, `commands`, `menu_contributions`, `tray_contributions`, `settings_pages` | MVP | Existing-folder-backed portal fences with health-aware settings and actions |
+| [plugins/context-actions](plugins/context-actions) | `commands`, `menu_contributions`, `desktop_context`, `settings_pages` | MVP | Contextual desktop/fence/item action contributions with settings-driven visibility |
+| [plugins/visual-modes](plugins/visual-modes) | `appearance`, `commands`, `tray_contributions`, `settings_pages` | Production | Global and per-fence visual preset commands with persisted appearance settings |
+| [plugins/sorting-clean-up](plugins/sorting-clean-up) | `commands`, `tray_contributions`, `settings_pages`, `desktop_context` | Production | Sorting, cleanup, and autosort command set with persisted behavior controls |
+| [plugins/rules-engine](plugins/rules-engine) | `commands`, `settings_pages`, `tray_contributions` | Production | Ordered rule evaluation commands with dry-run, pause, and export controls |
+| [plugins/productivity-actions](plugins/productivity-actions) | `commands`, `tray_contributions`, `settings_pages`, `desktop_context` | Production | Multi-step project, archive, rename, open, and snapshot fence actions |
+| [plugins/widgets-plus](plugins/widgets-plus) | `widgets`, `commands`, `settings_pages`, `tray_contributions` | MVP | Utility widget command set with persisted refresh and pause behavior |
+| [plugins/external-provider](plugins/external-provider) | `fence_content_provider`, `commands`, `settings_pages`, `tray_contributions` | MVP | External and generated provider-backed fence content with cache and reconnect flows |
+
+## Host API parity matrix
+
+Legend:
+
+- Behavior-complete: sample demonstrates real behavior on current host contracts
+- Scaffold-only: sample is contract-aligned but intentionally placeholder-oriented
+
+| Plugin | Host API parity |
+| --- | --- |
+| [plugins/fence-organizer](plugins/fence-organizer) | Behavior-complete |
+| [plugins/folder-portal](plugins/folder-portal) | Behavior-complete |
+| [plugins/context-actions](plugins/context-actions) | Behavior-complete |
+| [plugins/visual-modes](plugins/visual-modes) | Behavior-complete |
+| [plugins/sorting-clean-up](plugins/sorting-clean-up) | Behavior-complete |
+| [plugins/rules-engine](plugins/rules-engine) | Behavior-complete |
+| [plugins/productivity-actions](plugins/productivity-actions) | Behavior-complete |
+| [plugins/widgets-plus](plugins/widgets-plus) | Scaffold-only |
+| [plugins/external-provider](plugins/external-provider) | Behavior-complete |
+| [plugins/clock-widget](plugins/clock-widget) | Scaffold-only |
+| [plugins/dark-glass-theme](plugins/dark-glass-theme) | Scaffold-only |
+| [plugins/network-drive-fence](plugins/network-drive-fence) | Scaffold-only |
+| [plugins/powershell-fence](plugins/powershell-fence) | Scaffold-only |
 
 ## PowerShell fence feasibility
 

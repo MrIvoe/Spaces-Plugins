@@ -1,0 +1,570 @@
+#include "SortingCleanupPlugin.h"
+
+#include "extensions/MenuContributionRegistry.h"
+#include "extensions/PluginSettingsRegistry.h"
+#include "extensions/SettingsSchema.h"
+
+#include <algorithm>
+#include <chrono>
+#include <filesystem>
+#include <system_error>
+#include <vector>
+
+namespace fs = std::filesystem;
+
+PluginManifest SortingCleanupPlugin::GetManifest() const
+{
+    PluginManifest m;
+    m.id = L"community.fence_sort_cleanup";
+    m.displayName = L"Fence Sort and Clean Up";
+    m.version = L"1.0.0";
+    m.description = L"Sorts and arranges fence items with optional automation and cleanup tools.";
+    m.minHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
+    m.maxHostApiVersion = SimpleFencesVersion::kPluginApiVersion;
+    m.capabilities = {L"commands", L"tray_contributions", L"settings_pages", L"desktop_context"};
+    return m;
+}
+
+bool SortingCleanupPlugin::Initialize(const PluginContext& context)
+{
+    m_context = context;
+    if (!m_context.commandDispatcher || !m_context.settingsRegistry || !m_context.appCommands)
+    {
+        if (m_context.diagnostics)
+        {
+            m_context.diagnostics->Error(L"SortingCleanupPlugin: Missing required host services");
+        }
+        return false;
+    }
+
+    m_autoSortEnabled = GetBool(L"auto.on_item_add", false);
+    RegisterSettings();
+    RegisterMenus();
+    RegisterCommands();
+    LogInfo(L"Initialized");
+    return true;
+}
+
+void SortingCleanupPlugin::Shutdown()
+{
+    LogInfo(L"Shutdown");
+}
+
+void SortingCleanupPlugin::RegisterSettings() const
+{
+    PluginSettingsPage page;
+    page.pluginId = L"community.fence_sort_cleanup";
+    page.pageId = L"sort.cleanup";
+    page.title = L"Sort and Clean Up";
+    page.order = 65;
+
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.enabled", L"Enable plugin", L"Master toggle for Sort and Clean Up behavior.", SettingsFieldType::Bool, L"true", {}, 1});
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.log_actions", L"Log actions", L"Write sort and cleanup actions to diagnostics.", SettingsFieldType::Bool, L"true", {}, 2});
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.show_notifications", L"Show notifications", L"Show user-facing notifications for sort actions when supported.", SettingsFieldType::Bool, L"false", {}, 3});
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.safe_mode", L"Safe mode", L"Use safer and less aggressive sort behavior by default.", SettingsFieldType::Bool, L"true", {}, 4});
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.default_mode", L"Default mode", L"Default sorting behavior profile.", SettingsFieldType::Enum, L"balanced", {{L"balanced", L"Balanced"}, {L"aggressive", L"Aggressive"}, {L"manual", L"Manual"}}, 5});
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.config_source", L"Config source", L"Configuration source identifier for this plugin.", SettingsFieldType::String, L"local", {}, 6});
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.refresh_interval_seconds", L"Refresh interval (s)", L"Preferred interval for sort-related update checks.", SettingsFieldType::Int, L"90", {}, 7});
+
+    page.fields.push_back(SettingsFieldDescriptor{L"sort.mode.default", L"Default sort mode", L"Default mode for sort commands and autosort.", SettingsFieldType::Enum, L"name", {{L"name", L"Name"}, {L"type", L"Type"}, {L"extension", L"Extension"}, {L"size", L"Size"}, {L"modified", L"Modified"}, {L"created", L"Created"}, {L"manual", L"Manual"}}, 10});
+    page.fields.push_back(SettingsFieldDescriptor{L"sort.mode.direction", L"Sort direction", L"Ascending or descending sort order.", SettingsFieldType::Enum, L"asc", {{L"asc", L"Ascending"}, {L"desc", L"Descending"}}, 20});
+    page.fields.push_back(SettingsFieldDescriptor{L"sort.case_sensitive", L"Case-sensitive sort", L"Use case-sensitive sort comparisons.", SettingsFieldType::Bool, L"false", {}, 30});
+    page.fields.push_back(SettingsFieldDescriptor{L"sort.locale_aware", L"Locale-aware sort", L"Use locale-aware sorting where available.", SettingsFieldType::Bool, L"true", {}, 40});
+    page.fields.push_back(SettingsFieldDescriptor{L"sort.folders_first", L"Folders first", L"Place folders before files when sorting mixed lists.", SettingsFieldType::Bool, L"true", {}, 50});
+    page.fields.push_back(SettingsFieldDescriptor{L"layout.cleanup_after_sort", L"Cleanup after sort", L"Remove empty subfolders after sorting operations.", SettingsFieldType::Bool, L"true", {}, 60});
+    page.fields.push_back(SettingsFieldDescriptor{L"layout.align_to_grid", L"Align to grid", L"Enable align-current-grid command behavior.", SettingsFieldType::Bool, L"true", {}, 70});
+    page.fields.push_back(SettingsFieldDescriptor{L"layout.grid_spacing_px", L"Grid spacing (px)", L"Grid spacing hint used by alignment behavior.", SettingsFieldType::Int, L"12", {}, 80});
+    page.fields.push_back(SettingsFieldDescriptor{L"layout.preserve_pinned", L"Preserve pinned items", L"Avoid moving pinned items when pin metadata is available.", SettingsFieldType::Bool, L"true", {}, 90});
+    page.fields.push_back(SettingsFieldDescriptor{L"auto.on_item_add", L"Enable autosort on item add", L"Enable autosort mode for item-add triggers.", SettingsFieldType::Bool, L"false", {}, 100});
+    page.fields.push_back(SettingsFieldDescriptor{L"auto.debounce_ms", L"Autosort debounce (ms)", L"Debounce interval for autosort trigger bursts.", SettingsFieldType::Int, L"800", {}, 110});
+
+    m_context.settingsRegistry->RegisterPage(std::move(page));
+}
+
+void SortingCleanupPlugin::RegisterMenus() const
+{
+    if (!m_context.menuRegistry)
+    {
+        return;
+    }
+
+    m_context.menuRegistry->Register(MenuContribution{MenuSurface::FenceContext, L"Sort Current by Name", L"sort.current.name", 810, false});
+    m_context.menuRegistry->Register(MenuContribution{MenuSurface::FenceContext, L"Sort Current by Type", L"sort.current.type", 820, false});
+    m_context.menuRegistry->Register(MenuContribution{MenuSurface::FenceContext, L"Sort Current by Modified", L"sort.current.modified", 830, false});
+    m_context.menuRegistry->Register(MenuContribution{MenuSurface::FenceContext, L"Clean Up Current", L"cleanup.current", 840, true});
+    m_context.menuRegistry->Register(MenuContribution{MenuSurface::FenceContext, L"Align Current to Grid", L"align.current.grid", 850, false});
+    m_context.menuRegistry->Register(MenuContribution{MenuSurface::Tray, L"Toggle Autosort", L"autosort.toggle", 860, false});
+}
+
+void SortingCleanupPlugin::RegisterCommands() const
+{
+    m_context.commandDispatcher->RegisterCommand(L"sort.current.name", [this](const CommandContext& command) { HandleSortByName(command); });
+    m_context.commandDispatcher->RegisterCommand(L"sort.current.type", [this](const CommandContext& command) { HandleSortByType(command); });
+    m_context.commandDispatcher->RegisterCommand(L"sort.current.modified", [this](const CommandContext& command) { HandleSortByModified(command); });
+    m_context.commandDispatcher->RegisterCommand(L"cleanup.current", [this](const CommandContext& command) { HandleCleanupCurrent(command); });
+    m_context.commandDispatcher->RegisterCommand(L"align.current.grid", [this](const CommandContext& command) { HandleAlignGrid(command); });
+    m_context.commandDispatcher->RegisterCommand(L"autosort.toggle", [this](const CommandContext& command) { HandleAutoSortToggle(command); });
+}
+
+void SortingCleanupPlugin::HandleSortByName(const CommandContext& command) const
+{
+    if (!IsPluginEnabled())
+    {
+        return;
+    }
+
+    const FenceMetadata fence = ResolveFence(command);
+    if (fence.id.empty() || fence.backingFolderPath.empty())
+    {
+        LogWarn(L"sort.current.name skipped: no fence context");
+        return;
+    }
+
+    std::error_code ec;
+    std::vector<fs::path> files;
+    for (const auto& entry : fs::directory_iterator(fence.backingFolderPath, fs::directory_options::skip_permission_denied, ec))
+    {
+        if (ec)
+        {
+            ec.clear();
+            continue;
+        }
+
+        if (entry.is_regular_file())
+        {
+            files.push_back(entry.path());
+        }
+    }
+
+    const bool caseSensitive = GetBool(L"sort.case_sensitive", false);
+    const bool descending = GetString(L"sort.mode.direction", L"asc") == L"desc";
+
+    std::sort(files.begin(), files.end(), [caseSensitive, descending](const fs::path& a, const fs::path& b) {
+        std::wstring av = a.filename().wstring();
+        std::wstring bv = b.filename().wstring();
+        if (!caseSensitive)
+        {
+            std::transform(av.begin(), av.end(), av.begin(), ::towlower);
+            std::transform(bv.begin(), bv.end(), bv.begin(), ::towlower);
+        }
+
+        return descending ? av > bv : av < bv;
+    });
+
+    ApplySortPlan(fence, files);
+    SetSetting(L"sort.mode.default", L"name");
+    LogInfo(L"sort.current.name applied to " + std::to_wstring(files.size()) + L" files");
+}
+
+void SortingCleanupPlugin::HandleSortByType(const CommandContext& command) const
+{
+    if (!IsPluginEnabled())
+    {
+        return;
+    }
+
+    const FenceMetadata fence = ResolveFence(command);
+    if (fence.id.empty() || fence.backingFolderPath.empty())
+    {
+        LogWarn(L"sort.current.type skipped: no fence context");
+        return;
+    }
+
+    std::error_code ec;
+    std::vector<fs::path> files;
+    for (const auto& entry : fs::directory_iterator(fence.backingFolderPath, fs::directory_options::skip_permission_denied, ec))
+    {
+        if (ec)
+        {
+            ec.clear();
+            continue;
+        }
+
+        if (entry.is_regular_file())
+        {
+            files.push_back(entry.path());
+        }
+    }
+
+    const bool descending = GetString(L"sort.mode.direction", L"asc") == L"desc";
+    std::sort(files.begin(), files.end(), [descending](const fs::path& a, const fs::path& b) {
+        std::wstring ae = a.extension().wstring();
+        std::wstring be = b.extension().wstring();
+        std::transform(ae.begin(), ae.end(), ae.begin(), ::towlower);
+        std::transform(be.begin(), be.end(), be.begin(), ::towlower);
+        if (ae == be)
+        {
+            return descending ? a.filename().wstring() > b.filename().wstring() : a.filename().wstring() < b.filename().wstring();
+        }
+
+        return descending ? ae > be : ae < be;
+    });
+
+    ApplySortPlan(fence, files);
+    SetSetting(L"sort.mode.default", L"type");
+    LogInfo(L"sort.current.type applied to " + std::to_wstring(files.size()) + L" files");
+}
+
+void SortingCleanupPlugin::HandleSortByModified(const CommandContext& command) const
+{
+    if (!IsPluginEnabled())
+    {
+        return;
+    }
+
+    const FenceMetadata fence = ResolveFence(command);
+    if (fence.id.empty() || fence.backingFolderPath.empty())
+    {
+        LogWarn(L"sort.current.modified skipped: no fence context");
+        return;
+    }
+
+    std::error_code ec;
+    std::vector<fs::path> files;
+    for (const auto& entry : fs::directory_iterator(fence.backingFolderPath, fs::directory_options::skip_permission_denied, ec))
+    {
+        if (ec)
+        {
+            ec.clear();
+            continue;
+        }
+
+        if (entry.is_regular_file())
+        {
+            files.push_back(entry.path());
+        }
+    }
+
+    const bool descending = GetString(L"sort.mode.direction", L"asc") == L"desc";
+    std::sort(files.begin(), files.end(), [descending](const fs::path& a, const fs::path& b) {
+        std::error_code aec;
+        std::error_code bec;
+        const auto at = fs::last_write_time(a, aec);
+        const auto bt = fs::last_write_time(b, bec);
+        if (aec || bec)
+        {
+            return descending ? a.filename().wstring() > b.filename().wstring() : a.filename().wstring() < b.filename().wstring();
+        }
+
+        return descending ? at > bt : at < bt;
+    });
+
+    ApplySortPlan(fence, files);
+    SetSetting(L"sort.mode.default", L"modified");
+    LogInfo(L"sort.current.modified applied to " + std::to_wstring(files.size()) + L" files");
+}
+
+void SortingCleanupPlugin::HandleCleanupCurrent(const CommandContext& command) const
+{
+    if (!IsPluginEnabled())
+    {
+        return;
+    }
+
+    const FenceMetadata fence = ResolveFence(command);
+    if (fence.id.empty() || fence.backingFolderPath.empty())
+    {
+        LogWarn(L"cleanup.current skipped: no fence context");
+        return;
+    }
+
+    size_t removed = 0;
+    std::error_code ec;
+    for (const auto& entry : fs::directory_iterator(fence.backingFolderPath, fs::directory_options::skip_permission_denied, ec))
+    {
+        if (ec)
+        {
+            ec.clear();
+            continue;
+        }
+
+        if (entry.is_directory() && fs::is_empty(entry.path(), ec) && !ec)
+        {
+            fs::remove(entry.path(), ec);
+            if (!ec)
+            {
+                ++removed;
+            }
+        }
+
+        ec.clear();
+    }
+
+    RefreshFenceWithThrottle(fence.id);
+    LogInfo(L"cleanup.current removed " + std::to_wstring(removed) + L" empty folder(s)");
+    Notify(L"Cleanup current completed.");
+}
+
+void SortingCleanupPlugin::HandleAlignGrid(const CommandContext& command) const
+{
+    if (!IsPluginEnabled())
+    {
+        return;
+    }
+
+    const FenceMetadata fence = ResolveFence(command);
+    if (fence.id.empty())
+    {
+        LogWarn(L"align.current.grid skipped: no fence context");
+        return;
+    }
+
+    const bool alignEnabled = GetBool(L"layout.align_to_grid", true);
+    const int spacing = GetInt(L"layout.grid_spacing_px", 12);
+    if (!alignEnabled)
+    {
+        LogInfo(L"align.current.grid skipped because layout.align_to_grid=false");
+        return;
+    }
+
+    LogInfo(L"align.current.grid requested for fence=" + fence.id + L" spacing=" + std::to_wstring(spacing) + L"px");
+}
+
+void SortingCleanupPlugin::HandleAutoSortToggle(const CommandContext&) const
+{
+    if (!IsPluginEnabled())
+    {
+        return;
+    }
+
+    m_autoSortEnabled = !m_autoSortEnabled;
+    SetSetting(L"auto.on_item_add", m_autoSortEnabled ? L"true" : L"false");
+    LogInfo(m_autoSortEnabled ? L"autosort enabled" : L"autosort disabled");
+    Notify(m_autoSortEnabled ? L"Autosort enabled." : L"Autosort disabled.");
+}
+
+FenceMetadata SortingCleanupPlugin::ResolveFence(const CommandContext& command) const
+{
+    if (!command.fence.id.empty())
+    {
+        return command.fence;
+    }
+
+    const CommandContext current = m_context.appCommands->GetCurrentCommandContext();
+    if (!current.fence.id.empty())
+    {
+        return current.fence;
+    }
+
+    const FenceMetadata active = m_context.appCommands->GetActiveFenceMetadata();
+    if (!active.id.empty())
+    {
+        return active;
+    }
+
+    return {};
+}
+
+bool SortingCleanupPlugin::GetBool(const std::wstring& key, bool fallback) const
+{
+    return GetString(key, fallback ? L"true" : L"false") == L"true";
+}
+
+bool SortingCleanupPlugin::IsPluginEnabled() const
+{
+    return GetBool(L"plugin.enabled", true);
+}
+
+bool SortingCleanupPlugin::ShouldLogActions() const
+{
+    return GetBool(L"plugin.log_actions", true);
+}
+
+bool SortingCleanupPlugin::IsSafeModeEnabled() const
+{
+    return GetBool(L"plugin.safe_mode", true);
+}
+
+std::wstring SortingCleanupPlugin::GetDefaultMode() const
+{
+    return GetString(L"plugin.default_mode", L"balanced");
+}
+
+int SortingCleanupPlugin::GetRefreshIntervalSeconds() const
+{
+    int seconds = GetInt(L"plugin.refresh_interval_seconds", 90);
+    if (seconds < 1)
+    {
+        seconds = 1;
+    }
+    return seconds;
+}
+
+void SortingCleanupPlugin::Notify(const std::wstring& message) const
+{
+    if (!GetBool(L"plugin.show_notifications", false) || !m_context.diagnostics)
+    {
+        return;
+    }
+
+    m_context.diagnostics->Info(L"[SortCleanup][Notification] " + message);
+}
+
+void SortingCleanupPlugin::RefreshFenceWithThrottle(const std::wstring& fenceId) const
+{
+    if (!m_context.appCommands || fenceId.empty())
+    {
+        return;
+    }
+
+    const auto now = std::chrono::steady_clock::now();
+    const auto interval = std::chrono::seconds(GetRefreshIntervalSeconds());
+    if (m_lastRefreshAt.time_since_epoch().count() != 0 && (now - m_lastRefreshAt) < interval)
+    {
+        LogInfo(L"Refresh throttled by plugin.refresh_interval_seconds");
+        return;
+    }
+
+    m_lastRefreshAt = now;
+    m_context.appCommands->RefreshFence(fenceId);
+}
+
+int SortingCleanupPlugin::GetInt(const std::wstring& key, int fallback) const
+{
+    const std::wstring text = GetString(key, std::to_wstring(fallback));
+    try
+    {
+        return std::stoi(text);
+    }
+    catch (...)
+    {
+        return fallback;
+    }
+}
+
+std::wstring SortingCleanupPlugin::GetString(const std::wstring& key, const std::wstring& fallback) const
+{
+    return m_context.settingsRegistry ? m_context.settingsRegistry->GetValue(key, fallback) : fallback;
+}
+
+void SortingCleanupPlugin::SetSetting(const std::wstring& key, const std::wstring& value) const
+{
+    if (m_context.settingsRegistry)
+    {
+        m_context.settingsRegistry->SetValue(key, value);
+    }
+}
+
+void SortingCleanupPlugin::LogInfo(const std::wstring& message) const
+{
+    if (m_context.diagnostics && ShouldLogActions())
+    {
+        m_context.diagnostics->Info(L"[SortCleanup] " + message);
+    }
+}
+
+void SortingCleanupPlugin::LogWarn(const std::wstring& message) const
+{
+    if (m_context.diagnostics)
+    {
+        m_context.diagnostics->Warn(L"[SortCleanup] " + message);
+    }
+}
+
+fs::path SortingCleanupPlugin::BuildUniquePath(const fs::path& target)
+{
+    if (!fs::exists(target))
+    {
+        return target;
+    }
+
+    const fs::path stem = target.stem();
+    const fs::path ext = target.extension();
+    const fs::path dir = target.parent_path();
+    for (int i = 1; i <= 999; ++i)
+    {
+        const fs::path candidate = dir / (stem.wstring() + L" (" + std::to_wstring(i) + L")" + ext.wstring());
+        if (!fs::exists(candidate))
+        {
+            return candidate;
+        }
+    }
+
+    return target;
+}
+
+void SortingCleanupPlugin::ApplySortPlan(const FenceMetadata& fence, const std::vector<fs::path>& files) const
+{
+    if (files.empty())
+    {
+        return;
+    }
+
+    if (IsSafeModeEnabled() && files.size() > 200)
+    {
+        LogWarn(L"Sort skipped in safe mode because item count exceeds 200.");
+        return;
+    }
+
+    struct MoveStep
+    {
+        fs::path source;
+        fs::path tempTarget;
+        std::wstring originalName;
+    };
+
+    std::error_code ec;
+    std::vector<MoveStep> moves;
+    moves.reserve(files.size());
+
+    int index = 1;
+    for (const auto& source : files)
+    {
+        const std::wstring tempName = L"__sorted_" + std::to_wstring(index++) + L"__" + source.filename().wstring();
+        moves.push_back(MoveStep{source, BuildUniquePath(source.parent_path() / tempName), source.filename().wstring()});
+    }
+
+    for (const auto& move : moves)
+    {
+        fs::rename(move.source, move.tempTarget, ec);
+        if (ec)
+        {
+            LogWarn(L"Sort rename failed for " + move.source.filename().wstring());
+            ec.clear();
+        }
+    }
+
+    for (const auto& move : moves)
+    {
+        fs::path finalTarget = BuildUniquePath(move.tempTarget.parent_path() / move.originalName);
+        fs::rename(move.tempTarget, finalTarget, ec);
+        if (ec)
+        {
+            LogWarn(L"Sort finalize failed for " + move.tempTarget.filename().wstring());
+            ec.clear();
+        }
+    }
+
+    const std::wstring mode = GetDefaultMode();
+    const bool cleanupAfterSort = (mode == L"aggressive") ? true : ((mode == L"manual") ? false : GetBool(L"layout.cleanup_after_sort", true));
+    if (cleanupAfterSort)
+    {
+        size_t removed = 0;
+        for (const auto& entry : fs::directory_iterator(fence.backingFolderPath, fs::directory_options::skip_permission_denied, ec))
+        {
+            if (ec)
+            {
+                ec.clear();
+                continue;
+            }
+
+            if (entry.is_directory() && fs::is_empty(entry.path(), ec) && !ec)
+            {
+                fs::remove(entry.path(), ec);
+                if (!ec)
+                {
+                    ++removed;
+                }
+            }
+            ec.clear();
+        }
+
+        if (removed > 0)
+        {
+            LogInfo(L"sort cleanup removed " + std::to_wstring(removed) + L" empty folder(s)");
+        }
+    }
+
+    RefreshFenceWithThrottle(fence.id);
+    Notify(L"Sort operation completed.");
+}

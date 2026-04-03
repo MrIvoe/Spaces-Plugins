@@ -17,6 +17,8 @@ PluginManifest DarkGlassThemePlugin::GetManifest() const
 
 bool DarkGlassThemePlugin::Initialize(const PluginContext& context)
 {
+    m_context = context;
+
     if (!context.settingsRegistry)
     {
         return true; // no registry – run with defaults
@@ -28,6 +30,9 @@ bool DarkGlassThemePlugin::Initialize(const PluginContext& context)
     page.pageId   = L"dark_glass.style";
     page.title    = L"Glass Style";
     page.order    = 10;
+
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.show_notifications", L"Show notifications", L"Emit user-facing notification events to diagnostics.", SettingsFieldType::Bool, L"false", {}, 1});
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.refresh_interval_seconds", L"Refresh interval (s)", L"Minimum interval between theme reapply refresh operations.", SettingsFieldType::Int, L"60", {}, 2});
 
     page.fields.push_back(SettingsFieldDescriptor{
         L"dark_glass.style.enabled",
@@ -192,6 +197,8 @@ bool DarkGlassThemePlugin::Initialize(const PluginContext& context)
     {
         // Future: call into an appearance API to set colours, DWM attributes, etc.
         // For now the settings are declared and persisted for use by FenceWindow.
+        RefreshAllFencesWithThrottle();
+        Notify(L"Dark Glass theme applied.");
     }
 
     return true;
@@ -200,4 +207,69 @@ bool DarkGlassThemePlugin::Initialize(const PluginContext& context)
 void DarkGlassThemePlugin::Shutdown()
 {
     // Future: restore default fence window colours here.
+    Notify(L"Dark Glass theme shutdown.");
+}
+
+bool DarkGlassThemePlugin::GetBool(const std::wstring& key, bool fallback) const
+{
+    if (!m_context.settingsRegistry)
+    {
+        return fallback;
+    }
+
+    return m_context.settingsRegistry->GetValue(key, fallback ? L"true" : L"false") == L"true";
+}
+
+int DarkGlassThemePlugin::GetInt(const std::wstring& key, int fallback) const
+{
+    if (!m_context.settingsRegistry)
+    {
+        return fallback;
+    }
+
+    try
+    {
+        return std::stoi(m_context.settingsRegistry->GetValue(key, std::to_wstring(fallback)));
+    }
+    catch (...)
+    {
+        return fallback;
+    }
+}
+
+void DarkGlassThemePlugin::Notify(const std::wstring& message) const
+{
+    if (!GetBool(L"plugin.show_notifications", false) || !m_context.diagnostics)
+    {
+        return;
+    }
+
+    m_context.diagnostics->Info(L"[DarkGlassTheme][Notification] " + message);
+}
+
+void DarkGlassThemePlugin::RefreshAllFencesWithThrottle() const
+{
+    if (!m_context.appCommands)
+    {
+        return;
+    }
+
+    int seconds = GetInt(L"plugin.refresh_interval_seconds", 60);
+    if (seconds < 1)
+    {
+        seconds = 1;
+    }
+
+    const auto now = std::chrono::steady_clock::now();
+    if (m_lastApplyAt.time_since_epoch().count() != 0 && (now - m_lastApplyAt) < std::chrono::seconds(seconds))
+    {
+        return;
+    }
+
+    m_lastApplyAt = now;
+    const auto ids = m_context.appCommands->GetAllFenceIds();
+    for (const auto& id : ids)
+    {
+        m_context.appCommands->RefreshFence(id);
+    }
 }

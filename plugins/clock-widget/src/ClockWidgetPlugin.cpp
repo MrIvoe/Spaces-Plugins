@@ -16,6 +16,8 @@ PluginManifest ClockWidgetPlugin::GetManifest() const
 
 bool ClockWidgetPlugin::Initialize(const PluginContext& context)
 {
+    m_context = context;
+
     if (!context.settingsRegistry)
     {
         return true;
@@ -27,6 +29,9 @@ bool ClockWidgetPlugin::Initialize(const PluginContext& context)
     page.pageId   = L"clock.display";
     page.title    = L"Clock Display";
     page.order    = 10;
+
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.show_notifications", L"Show notifications", L"Emit user-facing notification events to diagnostics.", SettingsFieldType::Bool, L"false", {}, 1});
+    page.fields.push_back(SettingsFieldDescriptor{L"plugin.refresh_interval_seconds", L"Refresh interval (s)", L"Minimum interval between widget panel refresh operations.", SettingsFieldType::Int, L"60", {}, 2});
 
     page.fields.push_back(SettingsFieldDescriptor{
         L"clock.display.style",
@@ -174,7 +179,81 @@ bool ClockWidgetPlugin::Initialize(const PluginContext& context)
 
     context.settingsRegistry->RegisterPage(std::move(behaviorPage));
 
+    RefreshWidgetPanelsWithThrottle();
+    Notify(L"Clock widget initialized.");
+
     return true;
 }
 
-void ClockWidgetPlugin::Shutdown() {}
+void ClockWidgetPlugin::Shutdown()
+{
+    Notify(L"Clock widget shutdown.");
+}
+
+bool ClockWidgetPlugin::GetBool(const std::wstring& key, bool fallback) const
+{
+    if (!m_context.settingsRegistry)
+    {
+        return fallback;
+    }
+
+    return m_context.settingsRegistry->GetValue(key, fallback ? L"true" : L"false") == L"true";
+}
+
+int ClockWidgetPlugin::GetInt(const std::wstring& key, int fallback) const
+{
+    if (!m_context.settingsRegistry)
+    {
+        return fallback;
+    }
+
+    try
+    {
+        return std::stoi(m_context.settingsRegistry->GetValue(key, std::to_wstring(fallback)));
+    }
+    catch (...)
+    {
+        return fallback;
+    }
+}
+
+void ClockWidgetPlugin::Notify(const std::wstring& message) const
+{
+    if (!GetBool(L"plugin.show_notifications", false) || !m_context.diagnostics)
+    {
+        return;
+    }
+
+    m_context.diagnostics->Info(L"[ClockWidget][Notification] " + message);
+}
+
+void ClockWidgetPlugin::RefreshWidgetPanelsWithThrottle() const
+{
+    if (!m_context.appCommands)
+    {
+        return;
+    }
+
+    int seconds = GetInt(L"plugin.refresh_interval_seconds", 60);
+    if (seconds < 1)
+    {
+        seconds = 1;
+    }
+
+    const auto now = std::chrono::steady_clock::now();
+    if (m_lastRefreshAt.time_since_epoch().count() != 0 && (now - m_lastRefreshAt) < std::chrono::seconds(seconds))
+    {
+        return;
+    }
+
+    m_lastRefreshAt = now;
+    const auto ids = m_context.appCommands->GetAllFenceIds();
+    for (const auto& id : ids)
+    {
+        const FenceMetadata fence = m_context.appCommands->GetFenceMetadata(id);
+        if (fence.contentType == L"widget_panel")
+        {
+            m_context.appCommands->RefreshFence(id);
+        }
+    }
+}

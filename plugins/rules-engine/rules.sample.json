@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "engine": {
+    "evalMode": "first_match",
+    "dryRun": false,
+    "maxRulesPerItem": 100,
+    "preventLoops": true,
+    "debounceMs": 300
+  },
+  "rules": [
+    {
+      "id": "route-images",
+      "enabled": true,
+      "priority": 100,
+      "stopProcessing": true,
+      "match": {
+        "extensions": ["png", "jpg", "jpeg", "gif", "webp"]
+      },
+      "actions": [
+        {
+          "type": "route_to_group",
+          "group": "images"
+        }
+      ]
+    },
+    {
+      "id": "route-code",
+      "enabled": true,
+      "priority": 90,
+      "stopProcessing": true,
+      "match": {
+        "extensions": ["cpp", "h", "hpp", "cs", "ts", "js", "py"]
+      },
+      "actions": [
+        {
+          "type": "route_to_group",
+          "group": "code"
+        }
+      ]
+    },
+    {
+      "id": "route-folders",
+      "enabled": true,
+      "priority": 80,
+      "stopProcessing": true,
+      "match": {
+        "isDirectory": true
+      },
+      "actions": [
+        {
+          "type": "route_to_group",
+          "group": "folders"
+        }
+      ]
+    }
+  ]
+}
