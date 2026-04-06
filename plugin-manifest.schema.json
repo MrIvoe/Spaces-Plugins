@@ -16,8 +16,10 @@
     "enabledByDefault",
     "supportsSettingsPage",
     "supportsMainContentPage",
+    "supportsHostedSummaryPanel",
     "icon",
     "updateChannelId",
+    "hostedSummaryPanel",
     "capabilities",
     "repository"
   ],
@@ -40,8 +42,37 @@
     "enabledByDefault": { "type": "boolean" },
     "supportsSettingsPage": { "type": "boolean" },
     "supportsMainContentPage": { "type": "boolean" },
+    "supportsHostedSummaryPanel": { "type": "boolean" },
     "icon": { "type": "string" },
-    "updateChannelId": { "type": "string", "minLength": 1 },
+    "updateChannelId": { "type": "string", "enum": ["stable", "preview"] },
+    "hostedSummaryPanel": {
+      "type": "object",
+      "required": ["panelId", "title", "schemaVersion", "layout", "themeTokenNamespace", "sections"],
+      "properties": {
+        "panelId": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "schemaVersion": { "type": "string", "const": "1" },
+        "layout": { "type": "string", "enum": ["cards", "sections", "compact"] },
+        "themeTokenNamespace": { "type": "string", "const": "win32_theme_system" },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "title", "description", "iconToken", "surfaceToken"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "title": { "type": "string", "minLength": 1 },
+              "description": { "type": "string", "minLength": 1 },
+              "iconToken": { "type": "string", "minLength": 1 },
+              "surfaceToken": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "capabilities": {
       "type": "array",
       "minItems": 1,

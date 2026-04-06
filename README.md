@@ -59,8 +59,10 @@ Every plugin in this repository now follows the same manifest contract surface:
 - `maxHostApiVersion`
 - `supportsSettingsPage`
 - `supportsMainContentPage`
+- `supportsHostedSummaryPanel`
 - `icon` (optional)
 - `updateChannelId` (optional)
+- `hostedSummaryPanel`
 - `capabilities`
 - `repository`
 
@@ -68,8 +70,24 @@ Notes:
 
 - `supportsSettingsPage` should match whether `settings_pages` is present in `capabilities`.
 - `supportsMainContentPage` is `true` for plugins that provide a primary content experience (for example `fence_content_provider` or `widgets`).
+- `supportsHostedSummaryPanel` is required so plugins without a main content page can still surface host-rendered summary/details UI.
 - `icon` may be empty when no package icon is provided yet.
-- `updateChannelId` defaults to `stable` for normal releases.
+- `updateChannelId` must be one of `stable` or `preview`.
+
+## Hosted Summary Panel Contract
+
+For plugins with `supportsMainContentPage=false`, the host renders a summary/details surface from `hostedSummaryPanel` metadata.
+
+Contract shape:
+
+- `panelId`
+- `title`
+- `schemaVersion` (`1`)
+- `layout` (`cards`, `sections`, or `compact`)
+- `themeTokenNamespace` (`win32_theme_system`)
+- `sections[]` entries include `id`, `title`, `description`, `iconToken`, and `surfaceToken`
+
+This gives every plugin a hosted view surface without forcing content-provider semantics.
 
 ## Shared plugin UI pattern
 
@@ -89,6 +107,7 @@ UI standard convention:
 - standardized settings layout and section style
 - standardized section headers/cards
 - host icon/glyph resources first
+- map visual decisions to Win32ThemeSystem tokens through the host; avoid plugin-defined visual constants
 
 Use `PluginUiPatterns::AppendBaselineSettingsFields(...)` at the top of each settings page field list so labels, ordering, and descriptions stay consistent across plugins.
 
@@ -99,7 +118,6 @@ The baseline helper now includes shared UI policy keys under `plugin.ui.*`.
 | Plugin | Capabilities | Status | What it adds |
 | --- | --- | --- | --- |
 | [plugins/clock-widget](plugins/clock-widget) | `widgets`, `settings_pages` | Sample | A configurable clock widget with display and behavior settings |
-| [plugins/dark-glass-theme](plugins/dark-glass-theme) | `appearance`, `settings_pages` | Sample | A translucent dark-glass theme with more tunable style controls |
 | [plugins/network-drive-fence](plugins/network-drive-fence) | `fence_content_provider`, `settings_pages` | Sample | A network path fence provider with reconnect and offline behavior settings |
 | [plugins/powershell-fence](plugins/powershell-fence) | `fence_content_provider`, `settings_pages` | Prototype | A PowerShell workspace fence concept with startup, view, and security settings |
 | [plugins/fence-organizer](plugins/fence-organizer) | `commands`, `menu_contributions`, `settings_pages` | Production | Sorting, grouping, and file analysis commands for organizing fence contents |
@@ -131,7 +149,6 @@ Legend:
 | [plugins/widgets-plus](plugins/widgets-plus) | Scaffold-only |
 | [plugins/external-provider](plugins/external-provider) | Behavior-complete |
 | [plugins/clock-widget](plugins/clock-widget) | Scaffold-only |
-| [plugins/dark-glass-theme](plugins/dark-glass-theme) | Scaffold-only |
 | [plugins/network-drive-fence](plugins/network-drive-fence) | Scaffold-only |
 | [plugins/powershell-fence](plugins/powershell-fence) | Scaffold-only |
 
@@ -259,6 +276,28 @@ Published metadata should include at minimum:
 - plugin metadata
 - host/API compatibility bounds
 - hash for integrity validation
+- detached package signature and certificate chain metadata
+
+### Host enforcement gates (IVOESimpleFences)
+
+The host updater should enforce validation before each lifecycle stage:
+
+1. Install gate:
+    - validate plugin package manifest against `plugin-manifest.schema.json`
+    - verify channel policy (`stable` / `preview`)
+2. Stage gate:
+    - validate update feed against `plugin-update-feed.schema.json`
+    - verify SHA-256 hash and signature chain trust
+3. Activate gate:
+    - enforce host/app and plugin API compatibility bounds
+    - reject activation on failed validation and keep previous plugin version
+
+### Package signing policy
+
+- require `sha256` for payload integrity
+- require `signature` metadata with algorithm, signature bytes, and certificate chain
+- chain must validate to host-trusted root(s)
+- leaf signing certificate thumbprint must match feed metadata
 
 Example plugin update manifest entry:
 

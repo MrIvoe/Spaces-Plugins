@@ -17,6 +17,14 @@
       "sha256": "REPLACE_WITH_REAL_SHA256",
       "packageSizeBytes": 123456,
       "updateChannelId": "stable",
+      "signature": {
+        "algorithm": "ecdsa-p256-sha256",
+        "signatureBase64": "REPLACE_WITH_REAL_SIGNATURE",
+        "signingCertChainPem": [
+          "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----"
+        ],
+        "leafThumbprintSha256": "REPLACE_WITH_REAL_LEAF_THUMBPRINT_SHA256"
+      },
       "releaseNotesUrl": "https://example.invalid/community.example_plugin/releases/0.0.014"
     }
   ]

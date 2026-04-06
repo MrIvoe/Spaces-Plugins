@@ -32,10 +32,17 @@ All plugins should expose a consistent metadata surface:
 - `maxHostApiVersion`
 - `supportsSettingsPage`
 - `supportsMainContentPage`
+- `supportsHostedSummaryPanel`
 - optional `icon`
 - optional `updateChannelId`
+- `hostedSummaryPanel`
 - `capabilities`
 - `repository`
+
+Hosted panel requirement:
+
+- plugins with `supportsMainContentPage=false` must still provide `supportsHostedSummaryPanel=true`
+- host renders the panel from `hostedSummaryPanel` metadata
 
 ## UI standard
 
@@ -44,6 +51,7 @@ All plugins should expose a consistent metadata surface:
 - standard margins and padding
 - standard settings layout
 - standard section headers/cards
+- Win32ThemeSystem tokens only via host rendering; no plugin-specific hardcoded visual constants
 
 Use the shared helper in `plugins/shared/PluginUiPatterns.h` and keep plugin-specific pages aligned with host layout conventions.
 
@@ -59,6 +67,12 @@ Recommended flow:
 4. Main app downloads newer package.
 5. Main app stages replacement.
 6. Main app loads update on next launch or safe reload.
+
+Security and channel policy:
+
+- `channel` and `updateChannelId` must be `stable` or `preview`
+- every package update includes `sha256` and `signature` data
+- host validates signature chain and certificate thumbprint before staging/activation
 
 Example update manifest entry:
 
@@ -280,9 +294,13 @@ Example update manifest entry:
 
 ### Appearance Visual Modes Settings
 
-- `theme.preset` (`Enum`: `default|dark_glass|compact|minimal|high_contrast|presentation|custom`)
+- `theme.preset` (`Enum`: `amber-terminal|arctic-glass|aurora-light|brass-steampunk|copper-foundry|emerald-ledger|forest-organic|graphite-office|harbor-blue|ivory-bureau|mono-minimal|neon-cyberpunk|nocturne-dark|nova-futuristic|olive-terminal|pop-colorburst|rose-paper|storm-steel|sunset-retro|tape-lo-fi`)
 - `theme.apply_global` (`Bool`, default `true`)
 - `theme.allow_per_fence_override` (`Bool`, default `true`)
+- `theme.source` (`Enum`: `win32_theme_system`)
+- `theme.win32.theme_id` (`String`, canonical kebab-case Win32ThemeSystem family ID)
+- `theme.win32.display_name` (`String`, mapped Win32ThemeSystem family display name)
+- `theme.win32.catalog_version` (`String`, default `2026.04.06`)
 - `theme.colors.background` (`String`)
 - `theme.colors.header` (`String`)
 - `theme.colors.border` (`String`)

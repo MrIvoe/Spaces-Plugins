@@ -43,7 +43,32 @@ plugins/
   "version": "1.0.0",
   "description": "One sentence describing what the plugin does.",
   "author": "Your Name or GitHub handle",
-  "minHostVersion": "0.0.009",
+  "minHostVersion": "0.0.012",
+  "maxHostVersion": "0.1.999",
+  "minHostApiVersion": "0.0.012",
+  "maxHostApiVersion": "0.1.999",
+  "enabledByDefault": true,
+  "supportsSettingsPage": true,
+  "supportsMainContentPage": false,
+  "supportsHostedSummaryPanel": true,
+  "icon": "",
+  "updateChannelId": "stable",
+  "hostedSummaryPanel": {
+    "panelId": "community.my_plugin_name.summary",
+    "title": "My Plugin Name Overview",
+    "schemaVersion": "1",
+    "layout": "cards",
+    "themeTokenNamespace": "win32_theme_system",
+    "sections": [
+      {
+        "id": "status",
+        "title": "Status",
+        "description": "Operational health and capability summary rendered by the host.",
+        "iconToken": "host.icon.status",
+        "surfaceToken": "host.surface.card.status"
+      }
+    ]
+  },
   "capabilities": ["settings_pages"],
   "repository": "https://github.com/<you>/<your-plugin-repo>"
 }
@@ -54,12 +79,16 @@ plugins/
 - [ ] `plugin.json` is valid JSON and has all required keys
 - [ ] Plugin id uses `community.` prefix and matches the folder name (snake_case)
 - [ ] All settings keys follow `<plugin_short>.<page>.<field>` pattern
+- [ ] `supportsMainContentPage` and `supportsHostedSummaryPanel` are set correctly
+- [ ] `hostedSummaryPanel.themeTokenNamespace` is `win32_theme_system`
 - [ ] Content-provider plugins use `providerId` and `contentType` correctly in code
 - [ ] Plugin compiles cleanly against the latest SimpleFences `main` branch
 - [ ] `SimpleFences.exe` was not already running during verification
 - [ ] Settings page changes persist after restart
 - [ ] Plugin does not write to arbitrary filesystem paths (only `SettingsStore` / own AppData subfolder)
 - [ ] No hard-coded absolute paths or machine-specific values
+- [ ] No self-update orchestration logic exists in plugin code (host app handles updates)
+- [ ] UI remains host-rendered and theme-token driven (no plugin-specific hardcoded visual constants)
 
 ### 5  Open a pull request
 
@@ -84,7 +113,7 @@ Include in the PR description:
 
 ## Review process
 
-1. Automated: the CI check verifies `plugin.json` schema validity.
+1. Automated: the CI check runs `scripts/validate-plugin-manifests.ps1` on pull requests.
 2. Manual review by a maintainer for API fit, naming, and host compatibility.
 3. Once approved, your plugin appears in the hub listing in `README.md`.
 

@@ -36,6 +36,7 @@ This plugin now uses the Win32ThemeSystem catalog naming model so the same theme
 - theme.apply_global
 - theme.allow_per_fence_override
 - theme.source
+- theme.win32.theme_id
 - theme.win32.display_name
 - theme.win32.catalog_version
 - theme.colors.background
@@ -85,6 +86,7 @@ This plugin now uses the Win32ThemeSystem catalog naming model so the same theme
 Visual Modes now emits normalized bridge settings that a host can consume to call Win32ThemeSystem APIs directly:
 
 - `theme.preset`: stable key used by plugin commands
+- `theme.win32.theme_id`: canonical Win32ThemeSystem family id (for example `graphite-office`)
 - `theme.win32.display_name`: mapped Win32ThemeSystem display name (for example `Graphite Office`)
 - `theme.source`: currently `win32_theme_system`
 - `theme.win32.catalog_version`: emitted catalog contract version

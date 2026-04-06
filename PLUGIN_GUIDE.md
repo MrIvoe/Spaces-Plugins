@@ -57,8 +57,25 @@ Every plugin ships a manifest.
     "enabledByDefault": true,
     "supportsSettingsPage": true,
     "supportsMainContentPage": false,
+    "supportsHostedSummaryPanel": true,
     "icon": "",
     "updateChannelId": "stable",
+    "hostedSummaryPanel": {
+        "panelId": "community.my_awesome_plugin.summary",
+        "title": "My Awesome Plugin Overview",
+        "schemaVersion": "1",
+        "layout": "cards",
+        "themeTokenNamespace": "win32_theme_system",
+        "sections": [
+            {
+                "id": "status",
+                "title": "Status",
+                "description": "Operational health and capability summary rendered by the host.",
+                "iconToken": "host.icon.status",
+                "surfaceToken": "host.surface.card.status"
+            }
+        ]
+    },
   "capabilities": ["settings_pages"],
   "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins"
 }
@@ -80,8 +97,10 @@ Every plugin ships a manifest.
 | `enabledByDefault` | bool | Whether the host should enable the plugin on first install. |
 | `supportsSettingsPage` | bool | Whether the plugin contributes settings UI pages. |
 | `supportsMainContentPage` | bool | Whether the plugin provides a main fence content experience. |
+| `supportsHostedSummaryPanel` | bool | Whether the plugin provides host-rendered summary/details panel metadata. |
 | `icon` | string | Optional icon path or package-relative icon id. |
 | `updateChannelId` | string | Optional release channel id such as `stable` or `preview`. |
+| `hostedSummaryPanel` | object | Host-rendered summary/details panel contract mapped to theme tokens. |
 | `capabilities` | array | One or more capability strings. |
 | `repository` | string | Source repository URL for plugin metadata and docs. |
 
@@ -356,3 +375,22 @@ Minimal update entry:
     "sha256": "..."
 }
 ```
+
+Host-enforced gates (implemented in IVOESimpleFences):
+
+1. Install gate:
+    - validate plugin manifest against `plugin-manifest.schema.json`
+    - require `updateChannelId` to be `stable` or `preview`
+2. Stage gate:
+    - validate feed payload against `plugin-update-feed.schema.json`
+    - verify package `sha256`
+    - verify signature metadata and certificate chain trust
+3. Activate gate:
+    - enforce host/app and plugin API compatibility bounds
+    - reject activation on validation failure and keep prior plugin version
+
+Signing policy:
+
+- require detached signature metadata for every package update
+- require signing certificate chain to validate to host-trusted root(s)
+- require leaf certificate thumbprint match against update feed metadata

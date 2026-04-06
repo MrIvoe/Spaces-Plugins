@@ -197,7 +197,7 @@ bool ClockWidgetPlugin::Initialize(const PluginContext& context)
     appearancePage.fields.push_back(SettingsFieldDescriptor{
         L"clock.appearance.text_color_hex",
         L"Text color",
-        L"Override clock text color using a hex value such as #E4ECF7. Leave blank to use the theme default.",
+        L"Override clock text color using a hex value in #RRGGBB format. Leave blank to use host theme tokens.",
         SettingsFieldType::String, L"", {}, 20
     });
 

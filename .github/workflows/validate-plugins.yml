@@ -4,54 +4,24 @@ on:
   push:
     paths:
       - 'plugins/**/plugin.json'
+      - 'scripts/validate-plugin-manifests.ps1'
+      - 'plugin-manifest.schema.json'
+      - '.github/workflows/validate-plugins.yml'
   pull_request:
     paths:
       - 'plugins/**/plugin.json'
+      - 'scripts/validate-plugin-manifests.ps1'
+      - 'plugin-manifest.schema.json'
+      - '.github/workflows/validate-plugins.yml'
 
 jobs:
   validate:
-    name: Validate plugin.json files
-    runs-on: ubuntu-latest
+    name: Validate plugin manifest contract
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Check required fields in every plugin.json
-        run: |
-          REQUIRED=("id" "displayName" "version" "description" "author" "minHostVersion" "capabilities")
-          ERRORS=0
-
-          for manifest in plugins/**/plugin.json; do
-            echo "Checking $manifest ..."
-            for field in "${REQUIRED[@]}"; do
-              val=$(jq -r --arg f "$field" '.[$f] // empty' "$manifest")
-              if [ -z "$val" ]; then
-                echo "  ERROR: missing required field '$field' in $manifest"
-                ERRORS=$((ERRORS + 1))
-              fi
-            done
-
-            # id must start with 'community.'
-            id=$(jq -r '.id // empty' "$manifest")
-            if [[ "$id" != community.* ]]; then
-              echo "  ERROR: id '$id' must start with 'community.' in $manifest"
-              ERRORS=$((ERRORS + 1))
-            fi
-
-            # capabilities must be a non-empty array
-            cap_len=$(jq '.capabilities | length' "$manifest")
-            if [ "$cap_len" -eq 0 ]; then
-              echo "  ERROR: 'capabilities' must be a non-empty array in $manifest"
-              ERRORS=$((ERRORS + 1))
-            fi
-          done
-
-          if [ $ERRORS -gt 0 ]; then
-            echo "$ERRORS validation error(s) found."
-            exit 1
-          fi
-
-          echo "All plugin.json files are valid."
+      - name: Run PowerShell manifest validator
+        shell: pwsh
+        run: ./scripts/validate-plugin-manifests.ps1

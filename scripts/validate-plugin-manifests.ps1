@@ -16,8 +16,10 @@ $requiredKeys = @(
     'enabledByDefault',
     'supportsSettingsPage',
     'supportsMainContentPage',
+    'supportsHostedSummaryPanel',
     'icon',
     'updateChannelId',
+    'hostedSummaryPanel',
     'capabilities',
     'repository'
 )
@@ -54,6 +56,14 @@ foreach ($file in $pluginFiles)
         $failures += "[$($file.FullName)] version must be semantic (x.y.z)"
     }
 
+    if ($json.PSObject.Properties.Name -contains 'updateChannelId')
+    {
+        if ($json.updateChannelId -notin @('stable', 'preview'))
+        {
+            $failures += "[$($file.FullName)] updateChannelId must be stable or preview"
+        }
+    }
+
     if ($json.PSObject.Properties.Name -contains 'capabilities')
     {
         $caps = @($json.capabilities)
@@ -68,6 +78,62 @@ foreach ($file in $pluginFiles)
         if ($json.PSObject.Properties.Name -contains 'supportsMainContentPage' -and [bool]$json.supportsMainContentPage -ne [bool]$hasHostedContent)
         {
             $failures += "[$($file.FullName)] supportsMainContentPage does not match capabilities"
+        }
+
+        if ($json.PSObject.Properties.Name -contains 'supportsHostedSummaryPanel')
+        {
+            if (-not [bool]$json.supportsHostedSummaryPanel)
+            {
+                $failures += "[$($file.FullName)] supportsHostedSummaryPanel must be true so every plugin has a host-rendered panel surface"
+            }
+        }
+
+        if ($json.PSObject.Properties.Name -contains 'hostedSummaryPanel')
+        {
+            $panel = $json.hostedSummaryPanel
+            if ($null -eq $panel)
+            {
+                $failures += "[$($file.FullName)] hostedSummaryPanel must be present"
+            }
+            else
+            {
+                foreach ($panelKey in @('panelId', 'title', 'schemaVersion', 'layout', 'themeTokenNamespace', 'sections'))
+                {
+                    if (-not ($panel.PSObject.Properties.Name -contains $panelKey))
+                    {
+                        $failures += "[$($file.FullName)] hostedSummaryPanel missing key: $panelKey"
+                    }
+                }
+
+                if ($panel.PSObject.Properties.Name -contains 'schemaVersion' -and $panel.schemaVersion -ne '1')
+                {
+                    $failures += "[$($file.FullName)] hostedSummaryPanel.schemaVersion must be '1'"
+                }
+
+                if ($panel.PSObject.Properties.Name -contains 'themeTokenNamespace' -and $panel.themeTokenNamespace -ne 'win32_theme_system')
+                {
+                    $failures += "[$($file.FullName)] hostedSummaryPanel.themeTokenNamespace must be win32_theme_system"
+                }
+
+                if ($panel.PSObject.Properties.Name -contains 'sections')
+                {
+                    $sections = @($panel.sections)
+                    if ($sections.Count -eq 0)
+                    {
+                        $failures += "[$($file.FullName)] hostedSummaryPanel.sections must contain at least one section"
+                    }
+                    foreach ($section in $sections)
+                    {
+                        foreach ($sectionKey in @('id', 'title', 'description', 'iconToken', 'surfaceToken'))
+                        {
+                            if (-not ($section.PSObject.Properties.Name -contains $sectionKey))
+                            {
+                                $failures += "[$($file.FullName)] hostedSummaryPanel section missing key: $sectionKey"
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

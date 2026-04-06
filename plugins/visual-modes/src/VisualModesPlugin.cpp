@@ -10,29 +10,48 @@
 
 namespace
 {
+    std::wstring NormalizeWin32ThemeId(std::wstring themeId)
+    {
+        // Backward compatibility: older plugin builds persisted underscore ids.
+        for (auto& ch : themeId)
+        {
+            if (ch == L'_')
+            {
+                ch = L'-';
+            }
+        }
+
+        if (themeId.empty())
+        {
+            return L"graphite-office";
+        }
+
+        return themeId;
+    }
+
     const std::vector<std::pair<std::wstring, std::wstring>>& Win32ThemeOptions()
     {
         static const std::vector<std::pair<std::wstring, std::wstring>> options = {
-            {L"amber_terminal", L"Amber Terminal"},
-            {L"arctic_glass", L"Arctic Glass"},
-            {L"aurora_light", L"Aurora Light"},
-            {L"brass_steampunk", L"Brass Steampunk"},
-            {L"copper_foundry", L"Copper Foundry"},
-            {L"emerald_ledger", L"Emerald Ledger"},
-            {L"forest_organic", L"Forest Organic"},
-            {L"graphite_office", L"Graphite Office"},
-            {L"harbor_blue", L"Harbor Blue"},
-            {L"ivory_bureau", L"Ivory Bureau"},
-            {L"mono_minimal", L"Mono Minimal"},
-            {L"neon_cyberpunk", L"Neon Cyberpunk"},
-            {L"nocturne_dark", L"Nocturne Dark"},
-            {L"nova_futuristic", L"Nova Futuristic"},
-            {L"olive_terminal", L"Olive Terminal"},
-            {L"pop_colorburst", L"Pop Colorburst"},
-            {L"rose_paper", L"Rose Paper"},
-            {L"storm_steel", L"Storm Steel"},
-            {L"sunset_retro", L"Sunset Retro"},
-            {L"tape_lo_fi", L"Tape Lo-Fi"},
+            {L"amber-terminal", L"Amber Terminal"},
+            {L"arctic-glass", L"Arctic Glass"},
+            {L"aurora-light", L"Aurora Light"},
+            {L"brass-steampunk", L"Brass Steampunk"},
+            {L"copper-foundry", L"Copper Foundry"},
+            {L"emerald-ledger", L"Emerald Ledger"},
+            {L"forest-organic", L"Forest Organic"},
+            {L"graphite-office", L"Graphite Office"},
+            {L"harbor-blue", L"Harbor Blue"},
+            {L"ivory-bureau", L"Ivory Bureau"},
+            {L"mono-minimal", L"Mono Minimal"},
+            {L"neon-cyberpunk", L"Neon Cyberpunk"},
+            {L"nocturne-dark", L"Nocturne Dark"},
+            {L"nova-futuristic", L"Nova Futuristic"},
+            {L"olive-terminal", L"Olive Terminal"},
+            {L"pop-colorburst", L"Pop Colorburst"},
+            {L"rose-paper", L"Rose Paper"},
+            {L"storm-steel", L"Storm Steel"},
+            {L"sunset-retro", L"Sunset Retro"},
+            {L"tape-lo-fi", L"Tape Lo-Fi"},
             {L"custom", L"Custom"},
         };
 
@@ -42,16 +61,16 @@ namespace
     bool IsLikelyDarkTheme(const std::wstring& themeKey)
     {
         static const std::array<std::wstring, 10> darkKeys = {
-            L"amber_terminal",
-            L"arctic_glass",
-            L"graphite_office",
-            L"neon_cyberpunk",
-            L"nocturne_dark",
-            L"olive_terminal",
-            L"storm_steel",
-            L"harbor_blue",
-            L"forest_organic",
-            L"nova_futuristic",
+            L"amber-terminal",
+            L"arctic-glass",
+            L"graphite-office",
+            L"neon-cyberpunk",
+            L"nocturne-dark",
+            L"olive-terminal",
+            L"storm-steel",
+            L"harbor-blue",
+            L"forest-organic",
+            L"nova-futuristic",
         };
 
         for (const auto& key : darkKeys)
@@ -67,9 +86,10 @@ namespace
 
     std::wstring ThemeDisplayNameFromKey(const std::wstring& themeKey)
     {
+        const std::wstring normalized = NormalizeWin32ThemeId(themeKey);
         for (const auto& option : Win32ThemeOptions())
         {
-            if (option.first == themeKey)
+            if (option.first == normalized)
             {
                 return option.second;
             }
@@ -136,15 +156,16 @@ void VisualModesPlugin::RegisterSettings() const
         L"Preset",
         L"Choose the active theme from the Win32ThemeSystem catalog.",
         SettingsFieldType::Enum,
-        L"graphite_office",
+        L"graphite-office",
         Win32ThemeOptions(),
         10});
 
     page.fields.push_back(SettingsFieldDescriptor{L"theme.apply_global", L"Apply globally", L"Apply preset actions to all fences by default.", SettingsFieldType::Bool, L"true", {}, 20});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.allow_per_fence_override", L"Allow per-fence override", L"Allow apply/reset commands to target one fence.", SettingsFieldType::Bool, L"true", {}, 30});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.source", L"Theme source", L"Theme catalog source used by this plugin.", SettingsFieldType::Enum, L"win32_theme_system", {{L"win32_theme_system", L"Win32ThemeSystem"}}, 35});
-    page.fields.push_back(SettingsFieldDescriptor{L"theme.win32.display_name", L"Win32 theme display name", L"Normalized Win32ThemeSystem display name for host-side theme bridge integration.", SettingsFieldType::String, L"Graphite Office", {}, 36});
-    page.fields.push_back(SettingsFieldDescriptor{L"theme.win32.catalog_version", L"Win32 theme catalog version", L"Catalog contract version emitted for host bridge consumers.", SettingsFieldType::String, L"2026.04", {}, 37});
+    page.fields.push_back(SettingsFieldDescriptor{L"theme.win32.theme_id", L"Win32 theme ID", L"Canonical Win32ThemeSystem theme family identifier (kebab-case).", SettingsFieldType::String, L"graphite-office", {}, 36});
+    page.fields.push_back(SettingsFieldDescriptor{L"theme.win32.display_name", L"Win32 theme display name", L"Normalized Win32ThemeSystem display name for host-side theme bridge integration.", SettingsFieldType::String, L"Graphite Office", {}, 37});
+    page.fields.push_back(SettingsFieldDescriptor{L"theme.win32.catalog_version", L"Win32 theme catalog version", L"Catalog contract version emitted for host bridge consumers.", SettingsFieldType::String, L"2026.04.06", {}, 38});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.background", L"Background color", L"Custom preset background color (#RRGGBB). Leave blank to use host resources.", SettingsFieldType::String, L"", {}, 40});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.header", L"Header color", L"Custom preset header color (#RRGGBB). Leave blank to use host resources.", SettingsFieldType::String, L"", {}, 50});
     page.fields.push_back(SettingsFieldDescriptor{L"theme.colors.border", L"Border color", L"Custom preset border color (#RRGGBB). Leave blank to use host resources.", SettingsFieldType::String, L"", {}, 60});
@@ -174,7 +195,7 @@ void VisualModesPlugin::RegisterSettings() const
         L"theme.auto_switch.day_preset",
         L"Day preset",
         L"Preset applied during the day period when auto switch is enabled.",
-        SettingsFieldType::Enum, L"graphite_office",
+        SettingsFieldType::Enum, L"graphite-office",
         Win32ThemeOptions(),
         20
     });
@@ -183,7 +204,7 @@ void VisualModesPlugin::RegisterSettings() const
         L"theme.auto_switch.night_preset",
         L"Night preset",
         L"Preset applied during the night period when auto switch is enabled.",
-        SettingsFieldType::Enum, L"nocturne_dark",
+        SettingsFieldType::Enum, L"nocturne-dark",
         Win32ThemeOptions(),
         30
     });
@@ -232,7 +253,7 @@ void VisualModesPlugin::RegisterCommands() const
     m_context.commandDispatcher->RegisterCommand(L"theme.presentation_toggle", [this](const CommandContext& command) { HandlePresentationToggle(command); });
     m_context.commandDispatcher->RegisterCommand(L"theme.apply_current_to_fence", [this](const CommandContext& command) { HandleApplyCurrentToFence(command); });
     m_context.commandDispatcher->RegisterCommand(L"theme.reset_fence", [this](const CommandContext& command) { HandleResetFence(command); });
-    m_context.commandDispatcher->RegisterCommand(L"theme.host_bridge_sync", [this](const CommandContext&) { SetPreset(GetSetting(L"theme.preset", L"graphite_office")); Notify(L"Host theme bridge synchronized."); });
+    m_context.commandDispatcher->RegisterCommand(L"theme.host_bridge_sync", [this](const CommandContext&) { SetPreset(GetSetting(L"theme.preset", L"graphite-office")); Notify(L"Host theme bridge synchronized."); });
 
     // Compatibility aliases used by older/context-action routes.
     m_context.commandDispatcher->RegisterCommand(L"appearance.mode.focus", [this](const CommandContext& command) { HandleApplyCurrentToFence(command); });
@@ -253,7 +274,7 @@ void VisualModesPlugin::HandleThemeSwitch(const CommandContext&) const
         presets.push_back(option.first);
     }
 
-    const std::wstring current = GetSetting(L"theme.preset", L"graphite_office");
+    const std::wstring current = NormalizeWin32ThemeId(GetSetting(L"theme.preset", L"graphite-office"));
     size_t index = 0;
     while (index < presets.size() && presets[index] != current)
     {
@@ -280,8 +301,8 @@ void VisualModesPlugin::HandleCompactToggle(const CommandContext& command) const
         return;
     }
 
-    const std::wstring current = GetSetting(L"theme.preset", L"graphite_office");
-    const std::wstring next = (current == L"mono_minimal") ? L"graphite_office" : L"mono_minimal";
+    const std::wstring current = NormalizeWin32ThemeId(GetSetting(L"theme.preset", L"graphite-office"));
+    const std::wstring next = (current == L"mono-minimal") ? L"graphite-office" : L"mono-minimal";
     SetPreset(next);
 
     const std::wstring fenceId = ResolveTargetFenceId(command);
@@ -299,8 +320,8 @@ void VisualModesPlugin::HandlePresentationToggle(const CommandContext& command) 
         return;
     }
 
-    const std::wstring current = GetSetting(L"theme.preset", L"graphite_office");
-    const std::wstring next = (current == L"storm_steel") ? L"aurora_light" : L"storm_steel";
+    const std::wstring current = NormalizeWin32ThemeId(GetSetting(L"theme.preset", L"graphite-office"));
+    const std::wstring next = (current == L"storm-steel") ? L"aurora-light" : L"storm-steel";
     SetPreset(next);
 
     const std::wstring fenceId = ResolveTargetFenceId(command);
@@ -329,7 +350,7 @@ void VisualModesPlugin::HandleApplyCurrentToFence(const CommandContext& command)
         return;
     }
 
-    ApplyPresetToFence(fenceId, GetSetting(L"theme.preset", L"graphite_office"), false);
+    ApplyPresetToFence(fenceId, NormalizeWin32ThemeId(GetSetting(L"theme.preset", L"graphite-office")), false);
 }
 
 void VisualModesPlugin::HandleResetFence(const CommandContext& command) const
@@ -350,7 +371,7 @@ void VisualModesPlugin::HandleResetFence(const CommandContext& command) const
         return;
     }
 
-    ApplyPresetToFence(fenceId, L"graphite_office", false);
+    ApplyPresetToFence(fenceId, L"graphite-office", false);
 }
 
 std::wstring VisualModesPlugin::GetSetting(const std::wstring& key, const std::wstring& fallback) const
@@ -429,10 +450,12 @@ void VisualModesPlugin::SetPreset(const std::wstring& preset) const
         return;
     }
 
-    m_context.settingsRegistry->SetValue(L"theme.preset", preset);
-    m_context.settingsRegistry->SetValue(L"theme.win32.display_name", ThemeDisplayNameFromKey(preset));
+    const std::wstring normalized = NormalizeWin32ThemeId(preset);
+    m_context.settingsRegistry->SetValue(L"theme.preset", normalized);
+    m_context.settingsRegistry->SetValue(L"theme.win32.display_name", ThemeDisplayNameFromKey(normalized));
+    m_context.settingsRegistry->SetValue(L"theme.win32.theme_id", normalized);
     m_context.settingsRegistry->SetValue(L"theme.source", L"win32_theme_system");
-    LogInfo(L"Preset switched to " + preset);
+    LogInfo(L"Preset switched to " + normalized);
 }
 
 std::wstring VisualModesPlugin::ResolveTargetFenceId(const CommandContext& command) const

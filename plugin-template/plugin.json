@@ -16,6 +16,37 @@
   "capabilities": [
     "settings_pages"
   ],
-  "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins"
+  "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins",
+  "supportsHostedSummaryPanel": true,
+  "hostedSummaryPanel": {
+    "panelId": "community.template_plugin.summary",
+    "title": "Template Plugin Overview",
+    "schemaVersion": "1",
+    "layout": "cards",
+    "themeTokenNamespace": "win32_theme_system",
+    "sections": [
+      {
+        "id": "status",
+        "title": "Status",
+        "description": "Operational health and capability summary rendered by the host.",
+        "iconToken": "host.icon.status",
+        "surfaceToken": "host.surface.card.status"
+      },
+      {
+        "id": "configuration",
+        "title": "Configuration",
+        "description": "Key persisted settings and policy indicators rendered by the host.",
+        "iconToken": "host.icon.settings",
+        "surfaceToken": "host.surface.card.configuration"
+      },
+      {
+        "id": "actions",
+        "title": "Actions",
+        "description": "Host-routed actions and quick links for the plugin.",
+        "iconToken": "host.icon.actions",
+        "surfaceToken": "host.surface.card.actions"
+      }
+    ]
+  }
 }
 
