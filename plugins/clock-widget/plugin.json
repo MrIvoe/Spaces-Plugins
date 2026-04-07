@@ -4,7 +4,7 @@
   "version": "1.2.2",
   "description": "A configurable clock widget with digital, analogue, and dashboard-style display settings.",
   "author": "SimpleFences Community",
-  "minHostVersion": "0.0.012",
+  "minHostVersion": "0.0.013",
   "maxHostVersion": "0.1.999",
   "minHostApiVersion": "0.0.012",
   "maxHostApiVersion": "0.1.999",

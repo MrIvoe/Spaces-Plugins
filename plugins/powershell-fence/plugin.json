@@ -4,7 +4,7 @@
   "version": "0.2.2",
   "description": "Prototype PowerShell workspace fence with persisted startup, admin, view, and safety settings.",
   "author": "SimpleFences Community",
-  "minHostVersion": "0.0.012",
+  "minHostVersion": "0.0.013",
   "maxHostVersion": "0.1.999",
   "minHostApiVersion": "0.0.012",
   "maxHostApiVersion": "0.1.999",

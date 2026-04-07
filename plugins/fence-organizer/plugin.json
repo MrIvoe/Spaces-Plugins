@@ -4,7 +4,7 @@
   "version": "1.2.2",
   "description": "Adds context-aware sorting and cleanup commands that move and organize real fence files.",
   "author": "SimpleFences Community",
-  "minHostVersion": "0.0.012",
+  "minHostVersion": "0.0.013",
   "maxHostVersion": "0.1.999",
   "minHostApiVersion": "0.0.012",
   "maxHostApiVersion": "0.1.999",

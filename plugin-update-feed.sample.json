@@ -9,7 +9,7 @@
       "version": "0.0.014",
       "author": "MrIvoe",
       "description": "Example plugin for IVOESimpleFences",
-      "minHostVersion": "0.0.010",
+      "minHostVersion": "0.0.013",
       "maxHostVersion": "0.1.999",
       "minHostApiVersion": "0.0.012",
       "maxHostApiVersion": "0.1.999",
@@ -29,3 +29,4 @@
     }
   ]
 }
+
