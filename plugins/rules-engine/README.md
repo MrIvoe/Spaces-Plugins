@@ -1,54 +1,41 @@
 # Rules Engine
 
-Rules Engine is a catalog-aligned sample that demonstrates routed item classification commands and safe rule execution controls.
+Routes and classifies items using ordered matching rules.
 
-## Capabilities
+## Plugin Snapshot
 
-- commands
-- settings_pages
-- tray_contributions
+- Folder: `rules-engine`
+- Plugin ID: `community.rules_engine`
+- Version: `1.1.2`
+- Capabilities: `commands`, `settings_pages`, `tray_contributions`
 
-## Commands
+## Files
 
-- rules.run_now
-- rules.pause_toggle
-- rules.editor.open
-- rules.test_item
-- rules.export
+- `plugin.json`
+- `src/RulesEnginePlugin.h`
+- `src/RulesEnginePlugin.cpp`
+- `rules.schema.json`
+- `rules.sample.json`
 
-## Settings
+## Host Integration
 
-- plugin.enabled
-- plugin.log_actions
-- plugin.show_notifications
-- plugin.safe_mode
-- plugin.default_mode
-- plugin.config_source
-- plugin.refresh_interval_seconds
-- rules.enabled
-- rules.eval_mode
-- rules.log_matches
-- rules.dry_run
-- rules.debounce_ms
-- rules.max_rules_per_item
-- rules.prevent_loops
+1. Copy this plugin folder into the host plugin source location.
+2. Register plugin source in host build configuration.
+3. Register plugin in host plugin bootstrap (`BuiltinPlugins.cpp`).
+4. Build and run host app.
 
-## Rule schema files
+## Validation
 
-- rules.schema.json: JSON Schema contract for rule files (version 1.0).
-- rules.sample.json: validated starter rule set that follows the schema.
+1. Run manifest validator from this repo root:
+   - `./scripts/validate-plugin-manifests.ps1`
+2. In host app, verify:
+   - settings page visibility (if applicable)
+   - command/menu behavior (if applicable)
+   - startup stability and settings persistence
 
-## Behavior summary
+## Related Docs
 
-- Supports pause/resume and dry-run guardrails.
-- Uses item payload from CommandContext for rules.test_item classification.
-- Exports UTF-8 JSON to rules-engine-export.json with schemaVersion, schemaRef, sampleRuleFile, and normalized settings.
-- Keeps actions non-blocking and diagnostics-first.
-
-## Host registration snippet
-
-```cpp
-#include "plugins/community/rules_engine/RulesEnginePlugin.h"
-
-plugins.push_back(std::make_unique<RulesEnginePlugin>());
-```
+- [Create A Plugin](../../docs/CREATE_A_PLUGIN.md)
+- [How It Works](../../docs/HOW_IT_WORKS.md)
+- [Plugins Offered](../../docs/PLUGINS.md)
+- [Release Guide](../../docs/RELEASE.md)

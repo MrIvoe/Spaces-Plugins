@@ -1,48 +1,39 @@
 # External Provider Fences
 
-External Provider is a catalog-aligned sample for provider-backed virtual item lists sourced from file paths, directories, and generated inputs.
+Shows provider-backed virtual item lists from external and generated sources.
 
-## Capabilities
+## Plugin Snapshot
 
-- fence_content_provider
-- commands
-- settings_pages
-- tray_contributions
+- Folder: `external-provider`
+- Plugin ID: `community.external_provider`
+- Version: `1.0.2`
+- Capabilities: `fence_content_provider`, `commands`, `settings_pages`, `tray_contributions`
 
-## Commands
+## Files
 
-- provider.new
-- provider.refresh_current
-- provider.refresh_all
-- provider.reconnect_failed
+- `plugin.json`
+- `src/ExternalProviderPlugin.h`
+- `src/ExternalProviderPlugin.cpp`
 
-## Settings
+## Host Integration
 
-- plugin.show_notifications
-- plugin.refresh_interval_seconds
-- provider.enabled
-- provider.refresh_mode
-- provider.refresh_interval_seconds
-- provider.timeout_seconds
-- provider.retry_count
-- provider.cache_enabled
-- provider.cache_ttl_seconds
-- provider.read_only_default
-- provider.rss.url
-- provider.json.source
-- provider.network.root_path
+1. Copy this plugin folder into the host plugin source location.
+2. Register plugin source in host build configuration.
+3. Register plugin in host plugin bootstrap (`BuiltinPlugins.cpp`).
+4. Build and run host app.
 
-## Behavior summary
+## Validation
 
-- Registers an external_provider content provider with enumerate/drop/delete callbacks.
-- Supports cache-backed enumeration with TTL.
-- Uses fence content state transitions: connected, offline, unavailable, permission_denied.
-- New provider command creates an external_provider fence using configured source defaults.
+1. Run manifest validator from this repo root:
+   - `./scripts/validate-plugin-manifests.ps1`
+2. In host app, verify:
+   - settings page visibility (if applicable)
+   - command/menu behavior (if applicable)
+   - startup stability and settings persistence
 
-## Host registration snippet
+## Related Docs
 
-```cpp
-#include "plugins/community/external_provider/ExternalProviderPlugin.h"
-
-plugins.push_back(std::make_unique<ExternalProviderPlugin>());
-```
+- [Create A Plugin](../../docs/CREATE_A_PLUGIN.md)
+- [How It Works](../../docs/HOW_IT_WORKS.md)
+- [Plugins Offered](../../docs/PLUGINS.md)
+- [Release Guide](../../docs/RELEASE.md)

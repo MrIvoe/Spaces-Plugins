@@ -1,45 +1,39 @@
 # Widgets Plus
 
-Widgets Plus is a catalog-aligned widgets sample that provides command routing, persisted widget settings, and bounded refresh controls.
+Provides embeddable utility widgets with bounded refresh and persisted state.
 
-## Capabilities
+## Plugin Snapshot
 
-- widgets
-- commands
-- settings_pages
-- tray_contributions
+- Folder: `widgets-plus`
+- Plugin ID: `community.widgets_plus`
+- Version: `1.0.2`
+- Capabilities: `widgets`, `commands`, `settings_pages`, `tray_contributions`
 
-## Commands
+## Files
 
-- widgets.add.clock
-- widgets.add.notes
-- widgets.add.checklist
-- widgets.refresh_all
-- widgets.pause_toggle
+- `plugin.json`
+- `src/WidgetsPlusPlugin.h`
+- `src/WidgetsPlusPlugin.cpp`
 
-## Settings
+## Host Integration
 
-- plugin.show_notifications
-- plugin.refresh_interval_seconds
-- widgets.enabled
-- widgets.refresh_seconds_default
-- widgets.pause_on_battery_or_fullscreen
-- widgets.clock.mode
-- widgets.clock.use_24h
-- widgets.notes.auto_save
-- widgets.notes.max_chars
+1. Copy this plugin folder into the host plugin source location.
+2. Register plugin source in host build configuration.
+3. Register plugin in host plugin bootstrap (`BuiltinPlugins.cpp`).
+4. Build and run host app.
 
-## Behavior summary
+## Validation
 
-- Registers tray commands for widget creation and refresh control.
-- Uses settings-backed behavior for clock and notes widgets.
-- Supports pause/resume for refresh requests.
-- Refresh-all targets fences with widget_panel content type when host support is present.
+1. Run manifest validator from this repo root:
+   - `./scripts/validate-plugin-manifests.ps1`
+2. In host app, verify:
+   - settings page visibility (if applicable)
+   - command/menu behavior (if applicable)
+   - startup stability and settings persistence
 
-## Host registration snippet
+## Related Docs
 
-```cpp
-#include "plugins/community/widgets_plus/WidgetsPlusPlugin.h"
-
-plugins.push_back(std::make_unique<WidgetsPlusPlugin>());
-```
+- [Create A Plugin](../../docs/CREATE_A_PLUGIN.md)
+- [How It Works](../../docs/HOW_IT_WORKS.md)
+- [Plugins Offered](../../docs/PLUGINS.md)
+- [Release Guide](../../docs/RELEASE.md)

@@ -1,34 +1,39 @@
 # PowerShell Workspace Fence
 
-Prototype plugin for a PowerShell-driven fence experience in SimpleFences.
+Prototype PowerShell workspace fence with persisted startup, admin, view, and safety settings.
 
-## Current phase
+## Plugin Snapshot
 
-This plugin is intentionally a prototype. It registers a PowerShell-oriented fence content type and defines the persisted settings contract that a richer host integration can consume later.
+- Folder: `powershell-fence`
+- Plugin ID: `community.powershell_fence`
+- Version: `0.2.2`
+- Capabilities: `fence_content_provider`, `settings_pages`
 
-## What it does now
+## Files
 
-- registers the `powershell_workspace` content type
-- declares startup, view, and safety settings
-- gives the host a stable provider id and content type for future persistence and UI wiring
+- `plugin.json`
+- `src/PowerShellFencePlugin.h`
+- `src/PowerShellFencePlugin.cpp`
 
-## Settings
+## Host Integration
 
-- `plugin.show_notifications`: emits notification events to diagnostics when enabled
-- `plugin.refresh_interval_seconds`: throttles workspace fence refresh operations
+1. Copy this plugin folder into the host plugin source location.
+2. Register plugin source in host build configuration.
+3. Register plugin in host plugin bootstrap (`BuiltinPlugins.cpp`).
+4. Build and run host app.
 
-## What the host still needs
+## Validation
 
-- a child-window or terminal-host surface inside a fence
-- process lifecycle callbacks for starting and reusing PowerShell sessions
-- provider hooks that can materialize workspace content instead of only metadata
+1. Run manifest validator from this repo root:
+   - `./scripts/validate-plugin-manifests.ps1`
+2. In host app, verify:
+   - settings page visibility (if applicable)
+   - command/menu behavior (if applicable)
+   - startup stability and settings persistence
 
-## Suggested host direction
+## Related Docs
 
-The most practical design is a fence that can open into one of these modes:
-
-1. embedded terminal
-2. script dashboard for a startup script or task profile
-3. pinned workspace showing recent scripts, modules, and output logs
-
-This sample keeps the configuration side ready while the host surface catches up.
+- [Create A Plugin](../../docs/CREATE_A_PLUGIN.md)
+- [How It Works](../../docs/HOW_IT_WORKS.md)
+- [Plugins Offered](../../docs/PLUGINS.md)
+- [Release Guide](../../docs/RELEASE.md)

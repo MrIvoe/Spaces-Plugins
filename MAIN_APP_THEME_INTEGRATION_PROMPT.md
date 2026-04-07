@@ -24,6 +24,19 @@ Hard requirements:
 - Use theme.win32.display_name for UI only.
 - Never use display names as internal IDs.
 
+1. Appearance tab theme source replacement
+
+- The host appearance tab must source its theme list exclusively from the Win32ThemeSystem catalog.
+- Remove or gate off any existing external marketplace, online catalog, or hardcoded theme list (e.g. Discord theme, GitHub theme, or similar named presets) from the built-in appearance tab.
+- The canonical built-in theme list is exactly the 20 Win32ThemeSystem families:
+  - amber-terminal, arctic-glass, aurora-light, brass-steampunk, copper-foundry
+  - emerald-ledger, forest-organic, graphite-office, harbor-blue, ivory-bureau
+  - mono-minimal, neon-cyberpunk, nocturne-dark, nova-futuristic, olive-terminal
+  - pop-colorburst, rose-paper, storm-steel, sunset-retro, tape-lo-fi
+- Third-party theme packages installed by users appear alongside built-in themes in the same list, not from a separate marketplace pane.
+- If a prior theme source (marketplace or online catalog) must remain reachable, put it behind a separate "Browse external themes" action, never mixed into the primary appearance tab dropdown.
+- Do not fetch or display any theme names from the network in the primary appearance tab at runtime.
+
 1. Backward compatibility and migration
 
 - On startup, run idempotent migration before first render.

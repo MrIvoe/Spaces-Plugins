@@ -1,60 +1,39 @@
 # Network Drive Fence
 
-A fence content provider that enumerates and manages UNC paths and mapped network drives.
+A fence content provider that maps a UNC path or mapped network drive as a browseable folder fence.
 
-## Current state
+## Plugin Snapshot
 
-This plugin registers a fence content provider capability with 15+ persistent settings across three pages (Network Drive, Availability, and Access). The host can use this to populate fence content with network drive file listings and operations.
+- Folder: `network-drive-fence`
+- Plugin ID: `community.network_drive_fence`
+- Version: `1.2.2`
+- Capabilities: `fence_content_provider`, `settings_pages`
 
-## What it does now
+## Files
 
-- registers the `network_drive_fence` content type for fence providers
-- declares three settings pages: **Network Drive** (connection, display), **Availability** (offline handling, caching), and **Access** (auth, credentials)
-- provides stable settings keys for connection parameters and behavior
-- supports UNC paths, mapped drives, and reconnection logic
+- `plugin.json`
+- `src/NetworkDriveFencePlugin.h`
+- `src/NetworkDriveFencePlugin.cpp`
 
-## Key settings
+## Host Integration
 
-**Baseline plugin settings:**
+1. Copy this plugin folder into the host plugin source location.
+2. Register plugin source in host build configuration.
+3. Register plugin in host plugin bootstrap (`BuiltinPlugins.cpp`).
+4. Build and run host app.
 
-- `plugin.show_notifications`: emits notification events to diagnostics when enabled
-- `plugin.refresh_interval_seconds`: throttles network-drive sync refresh operations
+## Validation
 
-**Network Drive page:**
+1. Run manifest validator from this repo root:
+   - `./scripts/validate-plugin-manifests.ps1`
+2. In host app, verify:
+   - settings page visibility (if applicable)
+   - command/menu behavior (if applicable)
+   - startup stability and settings persistence
 
-- `default_path`: root UNC path or drive letter
-- `reconnect_on_load`, `offline_label`: robustness
-- `refresh_seconds`, `show_connection_status`: visibility
-- `prefer_drive_label`, `display_alias`: labeling
-- `open_action`: interaction mode (explorer, command prompt, custom)
+## Related Docs
 
-**Availability page:**
-
-- `offline_cache_mode`: fallback strategy
-- `warn_on_slow_share`, `retry_count`: reliability
-- `connect_timeout_seconds`, `background_refresh_on_metered`: performance
-
-**Access page:**
-
-- `auth_mode`: credential strategy
-- `remember_successful_credentials`: persistence
-- `read_only_preference`: safety default
-
-## What the host still needs
-
-- Win32 WinAPI calls for UNC/mapped drive enumeration (WNetOpenEnum, WNetEnumResource)
-- credential caching and SecureStore integration
-- file browser UI (context menu, properties, file operations)
-- offline caching implementation (local SQLite or file store)
-- slow/metered network detection (NETWORK_COST_MANAGER)
-
-## Suggested host direction
-
-Start with a folder browser view that:
-
-1. Enumerates the default_path recursively
-2. Applies reconnection logic on display
-3. Caches results in-memory or on-disk
-4. Shows connection status (green/offline icon)
-
-Consider adding per-drive bookmarks and favorite paths.
+- [Create A Plugin](../../docs/CREATE_A_PLUGIN.md)
+- [How It Works](../../docs/HOW_IT_WORKS.md)
+- [Plugins Offered](../../docs/PLUGINS.md)
+- [Release Guide](../../docs/RELEASE.md)

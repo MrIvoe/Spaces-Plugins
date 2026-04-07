@@ -1,332 +1,68 @@
 # Simple Fences Plugin Hub
 
-Community plugins, examples, and starter templates for [IVOESimpleFences](https://github.com/MrIvoe/IVOESimpleFences).
+[![Validate plugin manifests](https://github.com/MrIvoe/Simple-Fences-Plugins/actions/workflows/validate-plugins.yml/badge.svg)](https://github.com/MrIvoe/Simple-Fences-Plugins/actions/workflows/validate-plugins.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Repo stars](https://img.shields.io/github/stars/MrIvoe/Simple-Fences-Plugins?style=social)](https://github.com/MrIvoe/Simple-Fences-Plugins/stargazers)
 
-## Current phase
+Simple-Fences-Plugins is the official plugin hub for IVOESimpleFences.
 
-This hub currently targets the host's platform-foundation phase. On the main app side, the plugin model is real but still early:
+This repository provides:
+- production-ready and sample plugins
+- plugin template and manifest schema
+- contributor and release documentation
+- host integration references
 
-- manifests, plugin lifecycle, settings pages, and content-provider registration exist now
-- settings persistence exists now
-- several advanced experiences are still scaffold-level in the host, including richer widget surfaces and non-file content rendering
+## What The Program Offers
 
-That means this repository should do two things well:
+SimpleFences + this plugin hub gives you:
+- plugin-based desktop fence extensions
+- content provider plugins (portal/external/network/scripted)
+- settings-page contributions with persisted values
+- tray and desktop-context command extensions
+- appearance and widget extension points
 
-1. provide API-aligned sample plugins that compile cleanly against the host
-2. make it easy for contributors to copy a template and extend the platform safely
+## Documentation Hub
 
-For production-oriented plugin planning, see [PLUGIN_CATALOG.md](PLUGIN_CATALOG.md).
+Start here:
+- [Documentation Index](docs/INDEX.md)
+- [Docs Sidebar](docs/SIDEBAR.md)
+- [How It Works](docs/HOW_IT_WORKS.md)
+- [Plugins Offered](docs/PLUGINS.md)
+- [Create A Plugin](docs/CREATE_A_PLUGIN.md)
+- [Release Guide](docs/RELEASE.md)
+- [Host Integration](docs/HOST_INTEGRATION.md)
+- [Changelog](docs/CHANGELOG.md)
+- [Unused File Audit](docs/UNUSED_FILE_AUDIT.md)
 
-## Why this repo exists
-
-SimpleFences is a lightweight Win32 desktop organizer with real fence windows and real backing folders. This repo is the community layer around that app.
-
-The goal is not just "more plugins." The goal is to move the project closer to a strong Stardock Fences-style experience while keeping the code understandable and the file-handling model safe.
-
-High-value plugin directions include:
-
-- richer content providers such as network, portal, script, and workspace fences
-- more polished appearance packs and themes
-- widget panels that surface useful live information inside a fence
-- settings pages that let non-developers customize plugins without editing files by hand
-
-## Capability overview
-
-| Capability | What it unlocks |
-| --- | --- |
-| `commands` | Register command-dispatch actions |
-| `tray_contributions` | Add items to the tray menu |
-| `fence_content_provider` | Register a fence content type such as a network path or scripted workspace |
-| `appearance` | Provide appearance/theme controls for fence windows |
-| `widgets` | Add embeddable widget panels inside a fence |
-| `desktop_context` | Extend desktop context behavior |
-| `settings_pages` | Register persisted settings pages with checkbox, text, number, and enum fields |
-
-All fields registered through `settings_pages` are persisted automatically to `%LOCALAPPDATA%\SimpleFences\settings.json`.
-
-## Standard plugin manifest contract
-
-Every plugin in this repository now follows the same manifest contract surface:
-
-- `id`
-- `displayName`
-- `version`
-- `description`
-- `author`
-- `minHostVersion`
-- `maxHostVersion`
-- `minHostApiVersion`
-- `maxHostApiVersion`
-- `supportsSettingsPage`
-- `supportsMainContentPage`
-- `supportsHostedSummaryPanel`
-- `icon` (optional)
-- `updateChannelId` (optional)
-- `hostedSummaryPanel`
-- `capabilities`
-- `repository`
-
-Notes:
-
-- `supportsSettingsPage` should match whether `settings_pages` is present in `capabilities`.
-- `supportsMainContentPage` is `true` for plugins that provide a primary content experience (for example `fence_content_provider` or `widgets`).
-- `supportsHostedSummaryPanel` is required so plugins without a main content page can still surface host-rendered summary/details UI.
-- `icon` may be empty when no package icon is provided yet.
-- `updateChannelId` must be one of `stable` or `preview`.
-
-## Hosted Summary Panel Contract
-
-For plugins with `supportsMainContentPage=false`, the host renders a summary/details surface from `hostedSummaryPanel` metadata.
-
-Contract shape:
-
-- `panelId`
-- `title`
-- `schemaVersion` (`1`)
-- `layout` (`cards`, `sections`, or `compact`)
-- `themeTokenNamespace` (`win32_theme_system`)
-- `sections[]` entries include `id`, `title`, `description`, `iconToken`, and `surfaceToken`
-
-This gives every plugin a hosted view surface without forcing content-provider semantics.
-
-## Shared plugin UI pattern
-
-Plugin settings UI in this repository is host-rendered through `SettingsWindow` in the main app. To keep plugin pages visually cohesive and maintainable, plugins now use a shared helper:
-
-- `plugins/shared/PluginUiPatterns.h`
-
-Current baseline convention:
-
-- `plugin.show_notifications`
-- `plugin.refresh_interval_seconds`
-
-UI standard convention:
-
-- no hardcoded colors by default; use host resources first
-- standardized margins and padding
-- standardized settings layout and section style
-- standardized section headers/cards
-- host icon/glyph resources first
-- map visual decisions to Win32ThemeSystem tokens through the host; avoid plugin-defined visual constants
-
-Use `PluginUiPatterns::AppendBaselineSettingsFields(...)` at the top of each settings page field list so labels, ordering, and descriptions stay consistent across plugins.
-
-The baseline helper now includes shared UI policy keys under `plugin.ui.*`.
-
-## Included plugins
-
-| Plugin | Capabilities | Status | What it adds |
-| --- | --- | --- | --- |
-| [plugins/clock-widget](plugins/clock-widget) | `widgets`, `settings_pages` | Sample | A configurable clock widget with display and behavior settings |
-| [plugins/network-drive-fence](plugins/network-drive-fence) | `fence_content_provider`, `settings_pages` | Sample | A network path fence provider with reconnect and offline behavior settings |
-| [plugins/powershell-fence](plugins/powershell-fence) | `fence_content_provider`, `settings_pages` | Prototype | A PowerShell workspace fence concept with startup, view, and security settings |
-| [plugins/fence-organizer](plugins/fence-organizer) | `commands`, `menu_contributions`, `settings_pages` | Production | Sorting, grouping, and file analysis commands for organizing fence contents |
-| [plugins/folder-portal](plugins/folder-portal) | `fence_content_provider`, `commands`, `menu_contributions`, `tray_contributions`, `settings_pages` | MVP | Existing-folder-backed portal fences with health-aware settings and actions |
-| [plugins/context-actions](plugins/context-actions) | `commands`, `menu_contributions`, `desktop_context`, `settings_pages` | MVP | Contextual desktop/fence/item action contributions with settings-driven visibility |
-| [plugins/visual-modes](plugins/visual-modes) | `appearance`, `commands`, `tray_contributions`, `settings_pages` | Production | Global and per-fence visual preset commands with persisted appearance settings |
-| [plugins/sorting-clean-up](plugins/sorting-clean-up) | `commands`, `tray_contributions`, `settings_pages`, `desktop_context` | Production | Sorting, cleanup, and autosort command set with persisted behavior controls |
-| [plugins/rules-engine](plugins/rules-engine) | `commands`, `settings_pages`, `tray_contributions` | Production | Ordered rule evaluation commands with dry-run, pause, and export controls |
-| [plugins/productivity-actions](plugins/productivity-actions) | `commands`, `tray_contributions`, `settings_pages`, `desktop_context` | Production | Multi-step project, archive, rename, open, and snapshot fence actions |
-| [plugins/widgets-plus](plugins/widgets-plus) | `widgets`, `commands`, `settings_pages`, `tray_contributions` | MVP | Utility widget command set with persisted refresh and pause behavior |
-| [plugins/external-provider](plugins/external-provider) | `fence_content_provider`, `commands`, `settings_pages`, `tray_contributions` | MVP | External and generated provider-backed fence content with cache and reconnect flows |
-
-## Host API parity matrix
-
-Legend:
-
-- Behavior-complete: sample demonstrates real behavior on current host contracts
-- Scaffold-only: sample is contract-aligned but intentionally placeholder-oriented
-
-| Plugin | Host API parity |
-| --- | --- |
-| [plugins/fence-organizer](plugins/fence-organizer) | Behavior-complete |
-| [plugins/folder-portal](plugins/folder-portal) | Behavior-complete |
-| [plugins/context-actions](plugins/context-actions) | Behavior-complete |
-| [plugins/visual-modes](plugins/visual-modes) | Behavior-complete |
-| [plugins/sorting-clean-up](plugins/sorting-clean-up) | Behavior-complete |
-| [plugins/rules-engine](plugins/rules-engine) | Behavior-complete |
-| [plugins/productivity-actions](plugins/productivity-actions) | Behavior-complete |
-| [plugins/widgets-plus](plugins/widgets-plus) | Scaffold-only |
-| [plugins/external-provider](plugins/external-provider) | Behavior-complete |
-| [plugins/clock-widget](plugins/clock-widget) | Scaffold-only |
-| [plugins/network-drive-fence](plugins/network-drive-fence) | Scaffold-only |
-| [plugins/powershell-fence](plugins/powershell-fence) | Scaffold-only |
-
-## PowerShell fence feasibility
-
-Yes, a PowerShell-based fence is a sensible direction, but there is an important platform boundary.
-
-What can be done in this repo today:
-
-- define a plugin manifest and lifecycle implementation
-- register a PowerShell-oriented content type with the host
-- define persisted settings for startup scripts, working directory, execution behavior, and safety controls
-- document the host-side work needed for a real embedded terminal surface
-
-What still needs host support in [IVOESimpleFences](https://github.com/MrIvoe/IVOESimpleFences):
-
-- a renderable terminal or hosted child-window surface inside a fence
-- provider callbacks that can materialize PowerShell content rather than only register provider metadata
-- lifecycle hooks for process/session start, reuse, shutdown, and focus routing
-
-This repo now includes a PowerShell fence prototype so the configuration contract is ready when the host grows that surface.
-
-## Quick start for plugin authors
-
-1. Copy [plugin-template](plugin-template) to a new folder under `plugins/<your-kebab-name>/`.
-2. Rename the source files and replace the template plugin ids/classes.
-3. Update `plugin.json`.
-4. Copy the plugin into your local SimpleFences host checkout.
-5. Add the `.cpp` and `.h` files to the host `CMakeLists.txt` and register the plugin in `BuiltinPlugins.cpp`.
-6. Build the host and verify settings persistence.
-
-Registration example:
-
-```cpp
-#include "plugins/community/clock_widget/ClockWidgetPlugin.h"
-
-plugins.push_back(std::make_unique<ClockWidgetPlugin>());
-```
-
-## Building against the host
-
-This repository is a plugin hub, not a standalone executable. To compile a plugin, build it inside the main app repository.
-
-```powershell
-# From the IVOESimpleFences repo root
-cmake -S . -B build -G "Visual Studio 17 2022" -A x64
-cmake --build build --config Debug
-.\build\bin\Debug\SimpleFences.exe
-```
-
-Recommended manual verification after adding or changing a plugin:
-
-1. Confirm `SimpleFences.exe` is not already running.
-2. Build Debug.
-3. Launch the app.
-4. Open Settings and find the plugin page.
-5. Change several settings.
-6. Restart the app and verify those settings persisted.
-
-## Repository layout
+## Repository Layout
 
 ```text
-plugins/
-    <plugin-folder>/
-        plugin.json
-        README.md                optional but recommended
-        src/
-            <PluginName>.h
-            <PluginName>.cpp
-
 plugin-template/
-    plugin.json
-    README.md
-    src/
-        TemplatePlugin.h
-        TemplatePlugin.cpp
+plugins/
+docs/
+scripts/
+plugin-manifest.schema.json
 ```
 
-## Naming conventions
+## Quick Start
 
-| Thing | Convention |
-| --- | --- |
-| Plugin id | `community.<snake_case>` |
-| Field storage key | `<plugin_short_name>.<page>.<field>` |
-| Source files | `PascalCasePlugin.h` and `.cpp` |
-| Hub folder | `plugins/<kebab-case>/` |
-| Content type | a stable noun such as `network_drive` or `powershell_workspace` |
-| Provider id | the concrete implementation identity, usually matching the manifest id |
+1. Copy `plugin-template/` to `plugins/<your-plugin>/`.
+2. Update `plugin.json` and source files.
+3. Validate manifests with `scripts/validate-plugin-manifests.ps1`.
+4. Integrate into IVOESimpleFences and test startup/settings persistence.
 
-## Local validation
+## Validation
 
-The repository includes manifest validation in GitHub Actions for every `plugins/**/plugin.json` file. Keep template assets outside the `plugins/` folder so the template stays copyable without failing validation.
+Use:
 
-Before opening a pull request:
-
-1. validate every changed `plugin.json`
-2. build the host repo with your plugin added
-3. verify settings persistence after restart
-4. update the relevant README entries if behavior changed
-
-Local helper:
-
-- `scripts/validate-plugin-manifests.ps1`
-- `plugin-manifest.schema.json`
-
-## Plugin updates: package model (recommended)
-
-Do not model updates as the main app directly reading plugin repository folders.
-Plugins in this repository do not orchestrate self-update behavior.
-The host app is the owner of update checks, package download, staging, verification, and activation.
-
-Recommended flow:
-
-1. Plugin repo builds each plugin into a distributable package.
-2. Plugin repo publishes package artifacts and update metadata.
-3. Main app checks an update manifest feed.
-4. Main app downloads newer package(s).
-5. Main app stages replacements.
-6. Main app loads updated plugin(s) on next launch or safe reload.
-
-Published metadata should include at minimum:
-
-- package file URL
-- version
-- plugin metadata
-- host/API compatibility bounds
-- hash for integrity validation
-- detached package signature and certificate chain metadata
-
-### Host enforcement gates (IVOESimpleFences)
-
-The host updater should enforce validation before each lifecycle stage:
-
-1. Install gate:
-    - validate plugin package manifest against `plugin-manifest.schema.json`
-    - verify channel policy (`stable` / `preview`)
-2. Stage gate:
-    - validate update feed against `plugin-update-feed.schema.json`
-    - verify SHA-256 hash and signature chain trust
-3. Activate gate:
-    - enforce host/app and plugin API compatibility bounds
-    - reject activation on failed validation and keep previous plugin version
-
-### Package signing policy
-
-- require `sha256` for payload integrity
-- require `signature` metadata with algorithm, signature bytes, and certificate chain
-- chain must validate to host-trusted root(s)
-- leaf signing certificate thumbprint must match feed metadata
-
-Example plugin update manifest entry:
-
-```json
-{
-    "pluginId": "ExamplePlugin",
-    "displayName": "Example Plugin",
-    "version": "0.0.014",
-    "author": "MrIvoe",
-    "description": "Example plugin for IVOESimpleFences",
-    "minHostVersion": "0.0.010",
-    "maxHostVersion": "0.1.999",
-    "packageUrl": "https://example.invalid/ExamplePlugin-0.0.014.sfplugin",
-    "sha256": "..."
-}
+```powershell
+./scripts/validate-plugin-manifests.ps1
 ```
-
-Repository sample feed file:
-
-- `plugin-manifest.schema.json`
-- `plugin-update-feed.sample.json`
-- `plugin-update-feed.schema.json`
 
 ## Contributing
 
-Use [PLUGIN_GUIDE.md](PLUGIN_GUIDE.md) for the implementation walkthrough and [CONTRIBUTING.md](CONTRIBUTING.md) for the pull-request checklist.
-
-If your plugin needs a host capability that does not exist yet, open an issue in the main [IVOESimpleFences](https://github.com/MrIvoe/IVOESimpleFences) repo and describe the missing contract clearly.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT. See [LICENSE](LICENSE). Plugin authors retain ownership of their own plugin code.
+See [LICENSE](LICENSE).

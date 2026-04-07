@@ -1,51 +1,39 @@
 # Productivity Actions
 
-Productivity Actions is a catalog-aligned sample that demonstrates practical multi-step fence workflows.
+Adds practical multi-step commands for daily fence workflows.
 
-## Capabilities
+## Plugin Snapshot
 
-- commands
-- tray_contributions
-- settings_pages
-- desktop_context
+- Folder: `productivity-actions`
+- Plugin ID: `community.productivity_actions`
+- Version: `1.1.2`
+- Capabilities: `commands`, `tray_contributions`, `settings_pages`, `desktop_context`
 
-## Commands
+## Files
 
-- productivity.create_project_fence
-- productivity.archive_old
-- productivity.open_all
-- productivity.batch_rename
-- productivity.snapshot.save
+- `plugin.json`
+- `src/ProductivityActionsPlugin.h`
+- `src/ProductivityActionsPlugin.cpp`
 
-## Settings
+## Host Integration
 
-- plugin.enabled
-- plugin.log_actions
-- plugin.show_notifications
-- plugin.safe_mode
-- plugin.default_mode
-- plugin.config_source
-- plugin.refresh_interval_seconds
-- prod.enabled
-- prod.confirm_batch
-- prod.templates.default
-- prod.archive.threshold_days
-- prod.archive.action
-- prod.archive.destination
-- prod.rename.pattern
+1. Copy this plugin folder into the host plugin source location.
+2. Register plugin source in host build configuration.
+3. Register plugin in host plugin bootstrap (`BuiltinPlugins.cpp`).
+4. Build and run host app.
 
-## Behavior summary
+## Validation
 
-- Creates template-based project fences.
-- Archives old files by move/copy/prompt policy.
-- Opens all items in the selected fence.
-- Batch-renames files using {name} and {index} tokens.
-- Writes a plain-text fence snapshot report.
+1. Run manifest validator from this repo root:
+   - `./scripts/validate-plugin-manifests.ps1`
+2. In host app, verify:
+   - settings page visibility (if applicable)
+   - command/menu behavior (if applicable)
+   - startup stability and settings persistence
 
-## Host registration snippet
+## Related Docs
 
-```cpp
-#include "plugins/community/productivity_actions/ProductivityActionsPlugin.h"
-
-plugins.push_back(std::make_unique<ProductivityActionsPlugin>());
-```
+- [Create A Plugin](../../docs/CREATE_A_PLUGIN.md)
+- [How It Works](../../docs/HOW_IT_WORKS.md)
+- [Plugins Offered](../../docs/PLUGINS.md)
+- [Release Guide](../../docs/RELEASE.md)

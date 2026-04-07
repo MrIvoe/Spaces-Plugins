@@ -1,53 +1,39 @@
 # Clock Widget
 
-A configurable digital, analogue, and dashboard clock widget that can be embedded in a fence panel.
+A configurable clock widget with digital, analogue, and dashboard-style display settings.
 
-## Current state
+## Plugin Snapshot
 
-The plugin defines a complete widget capability with 13+ persistent settings across two pages (Display and Behavior). The host can use these settings to render various clock formats in fence panels.
+- Folder: `clock-widget`
+- Plugin ID: `community.clock_widget`
+- Version: `1.2.2`
+- Capabilities: `widgets`, `settings_pages`
 
-## What it does now
+## Files
 
-- registers the `widget` capability
-- declares two settings pages: **Display** (style, timezone, date, format options) and **Behavior** (refresh intervals, animation, interactions)
-- provides stable settings keys for the host to hydrate clock rendering logic
-- supports multiple display modes: digital (12/24h), analogue, and dashboard
+- `plugin.json`
+- `src/ClockWidgetPlugin.h`
+- `src/ClockWidgetPlugin.cpp`
 
-## Key settings
+## Host Integration
 
-**Baseline plugin settings:**
+1. Copy this plugin folder into the host plugin source location.
+2. Register plugin source in host build configuration.
+3. Register plugin in host plugin bootstrap (`BuiltinPlugins.cpp`).
+4. Build and run host app.
 
-- `plugin.show_notifications`: emits notification events to diagnostics when enabled
-- `plugin.refresh_interval_seconds`: throttles widget panel refresh operations
+## Validation
 
-**Display page:**
+1. Run manifest validator from this repo root:
+   - `./scripts/validate-plugin-manifests.ps1`
+2. In host app, verify:
+   - settings page visibility (if applicable)
+   - command/menu behavior (if applicable)
+   - startup stability and settings persistence
 
-- `style`: digital, analogue, or dashboard mode
-- `timezone`: UTC offset or named timezone
-- `show_seconds`, `show_date`, `show_day_period`: visibility toggles
-- `alignment`, `scale_percent`: layout controls
+## Related Docs
 
-**Behavior page:**
-
-- `refresh_ms`: update interval
-- `blink_separator`: visual emphasis
-- `pause_when_hidden`: power optimization
-- `sync_to_system_second`: accuracy control
-- `smooth_analogue_seconds`: animation smoothness
-
-## What the host still needs
-
-- widget surface rendering (canvas or custom control inside fence panel)
-- timezone resolution logic and system time querying
-- smooth animation implementation for analogue/dashboard modes
-- click-action behaviors (currently defined but unhandled)
-
-## Suggested host direction
-
-Extend the Display page with:
-
-- font family and weight selection
-- custom color scheme per widget instance
-- local time zone offset fine-tuning
-
-Consider adding templates: "Minimal", "Classic", "Digital Dashboard" as preset configurations.
+- [Create A Plugin](../../docs/CREATE_A_PLUGIN.md)
+- [How It Works](../../docs/HOW_IT_WORKS.md)
+- [Plugins Offered](../../docs/PLUGINS.md)
+- [Release Guide](../../docs/RELEASE.md)

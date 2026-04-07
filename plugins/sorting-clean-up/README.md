@@ -1,55 +1,39 @@
 # Fence Sort and Clean Up
 
-Fence Sort and Clean Up is a catalog-aligned sample focused on sorting and cleanup workflows for fence contents.
+Sorts and arranges fence items with optional automation and cleanup tools.
 
-## Capabilities
+## Plugin Snapshot
 
-- commands
-- tray_contributions
-- settings_pages
-- desktop_context
+- Folder: `sorting-clean-up`
+- Plugin ID: `community.fence_sort_cleanup`
+- Version: `1.1.2`
+- Capabilities: `commands`, `tray_contributions`, `settings_pages`, `desktop_context`
 
-## Commands
+## Files
 
-- sort.current.name
-- sort.current.type
-- sort.current.modified
-- cleanup.current
-- align.current.grid
-- autosort.toggle
+- `plugin.json`
+- `src/SortingCleanupPlugin.h`
+- `src/SortingCleanupPlugin.cpp`
 
-## Settings
+## Host Integration
 
-- plugin.enabled
-- plugin.log_actions
-- plugin.show_notifications
-- plugin.safe_mode
-- plugin.default_mode
-- plugin.config_source
-- plugin.refresh_interval_seconds
-- sort.mode.default
-- sort.mode.direction
-- sort.case_sensitive
-- sort.locale_aware
-- sort.folders_first
-- layout.cleanup_after_sort
-- layout.align_to_grid
-- layout.grid_spacing_px
-- layout.preserve_pinned
-- auto.on_item_add
-- auto.debounce_ms
+1. Copy this plugin folder into the host plugin source location.
+2. Register plugin source in host build configuration.
+3. Register plugin in host plugin bootstrap (`BuiltinPlugins.cpp`).
+4. Build and run host app.
 
-## Behavior summary
+## Validation
 
-- Sort commands operate on the active or routed fence backing folder.
-- Cleanup command removes empty subfolders and refreshes the fence.
-- Autosort toggle persists auto.on_item_add state in plugin settings.
-- Grid align command logs a non-blocking alignment intent using configured spacing.
+1. Run manifest validator from this repo root:
+   - `./scripts/validate-plugin-manifests.ps1`
+2. In host app, verify:
+   - settings page visibility (if applicable)
+   - command/menu behavior (if applicable)
+   - startup stability and settings persistence
 
-## Host registration snippet
+## Related Docs
 
-```cpp
-#include "plugins/community/sorting_cleanup/SortingCleanupPlugin.h"
-
-plugins.push_back(std::make_unique<SortingCleanupPlugin>());
-```
+- [Create A Plugin](../../docs/CREATE_A_PLUGIN.md)
+- [How It Works](../../docs/HOW_IT_WORKS.md)
+- [Plugins Offered](../../docs/PLUGINS.md)
+- [Release Guide](../../docs/RELEASE.md)
