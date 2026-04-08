@@ -1,10 +1,12 @@
-# Simple Spaces Plugin Hub
+# Spaces Plugin Hub
 
 [![Validate plugin manifests](https://github.com/MrIvoe/Spaces-Plugins/actions/workflows/validate-plugins.yml/badge.svg)](https://github.com/MrIvoe/Spaces-Plugins/actions/workflows/validate-plugins.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Repo stars](https://img.shields.io/github/stars/MrIvoe/Spaces-Plugins?style=social)](https://github.com/MrIvoe/Spaces-Plugins/stargazers)
 
 Spaces-Plugins is the official plugin hub for Spaces.
+
+Theme note: plugin UI should consume host-provided semantic theme tokens sourced from the Themes repository exports.
 
 This repository provides:
 - production-ready and sample plugins
