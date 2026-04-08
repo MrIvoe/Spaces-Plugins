@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MrIvoe/Spaces-Plugins/docs/ui-selector.contract.json",
+  "title": "Plugin Host UI Selector Contract",
+  "description": "Persisted user UI resource selections shared between host and plugins.",
+  "type": "object",
+  "required": ["version", "themeId", "selection"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "themeId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "selection": {
+      "type": "object",
+      "required": ["iconPack", "buttonStyle"],
+      "additionalProperties": false,
+      "properties": {
+        "iconPack": {
+          "type": "string",
+          "minLength": 1
+        },
+        "buttonStyle": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
