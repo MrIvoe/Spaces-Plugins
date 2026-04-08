@@ -1,6 +1,6 @@
 # Public Theme Package Contract
 
-This document defines the stable contract for third-party theme packages consumed by IVOESimpleFences.
+This document defines the stable contract for third-party theme packages consumed by Spaces.
 
 ## Goals
 

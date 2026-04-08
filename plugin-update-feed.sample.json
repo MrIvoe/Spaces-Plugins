@@ -8,7 +8,7 @@
       "displayName": "Example Plugin",
       "version": "0.0.014",
       "author": "MrIvoe",
-      "description": "Example plugin for IVOESimpleFences",
+      "description": "Example plugin for Spaces",
       "minHostVersion": "0.0.013",
       "maxHostVersion": "0.1.999",
       "minHostApiVersion": "0.0.012",

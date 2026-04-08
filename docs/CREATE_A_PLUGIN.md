@@ -38,7 +38,7 @@ Run manifest validation:
 
 ## 6. Integrate and test in host
 
-In IVOESimpleFences:
+In Spaces:
 1. Register plugin source in host build.
 2. Register plugin in `BuiltinPlugins.cpp`.
 3. Build and run host.

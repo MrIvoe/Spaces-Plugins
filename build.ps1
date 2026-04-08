@@ -10,10 +10,10 @@
     Requires:
       - CMake 3.20 or later on PATH (https://cmake.org)
       - Visual Studio 2019 or 2022 with the "Desktop development with C++" workload
-      - The IVOESimpleFences host SDK path (directory containing 'extensions/')
+      - The Spaces host SDK path (directory containing 'extensions/')
 
 .PARAMETER HostSdkPath
-    [Required] Path to the IVOESimpleFences host SDK directory that contains
+    [Required] Path to the Spaces host SDK directory that contains
     the 'extensions/' header folder.
 
 .PARAMETER BuildDir
@@ -31,14 +31,14 @@
     If specified, removes and recreates the build directory before configuring.
 
 .EXAMPLE
-    .\build.ps1 -HostSdkPath "C:\Dev\IVOESimpleFences\sdk"
+    .\build.ps1 -HostSdkPath "C:\Dev\Spaces\sdk"
 
 .EXAMPLE
-    .\build.ps1 -HostSdkPath "C:\Dev\IVOESimpleFences\sdk" -Configuration Debug -Clean
+    .\build.ps1 -HostSdkPath "C:\Dev\Spaces\sdk" -Configuration Debug -Clean
 
 .EXAMPLE
-    .\build.ps1 -HostSdkPath "C:\Dev\IVOESimpleFences\sdk" `
-                -InstallDir "C:\Dev\IVOESimpleFences\bin\plugins" `
+    .\build.ps1 -HostSdkPath "C:\Dev\Spaces\sdk" `
+                -InstallDir "C:\Dev\Spaces\bin\plugins" `
                 -Clean
 #>
 
@@ -96,7 +96,7 @@ if (-not (Test-Path $HostSdkPath -PathType Container)) {
 }
 $sdkPath = (Resolve-Path $HostSdkPath).Path
 if (-not (Test-Path (Join-Path $sdkPath "extensions") -PathType Container)) {
-    Fail "HostSdkPath does not contain an 'extensions/' subfolder.`n  Checked: $sdkPath\extensions`n  Make sure HostSdkPath points to the IVOESimpleFences host SDK root."
+    Fail "HostSdkPath does not contain an 'extensions/' subfolder.`n  Checked: $sdkPath\extensions`n  Make sure HostSdkPath points to the Spaces host SDK root."
 }
 Write-Host "  Host SDK     : $sdkPath"
 

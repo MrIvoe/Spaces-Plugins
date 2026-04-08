@@ -19,7 +19,7 @@
     "desktop_context",
     "settings_pages"
   ],
-  "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins",
+  "repository": "https://github.com/MrIvoe/Spaces-Plugins",
   "supportsHostedSummaryPanel": true,
   "hostedSummaryPanel": {
     "panelId": "community.context_actions.summary",

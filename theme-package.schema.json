@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/MrIvoe/Simple-Fences-Plugins/theme-package.schema.json",
+  "$id": "https://github.com/MrIvoe/Spaces-Plugins/theme-package.schema.json",
   "title": "SimpleFences Theme Package",
   "type": "object",
   "required": [

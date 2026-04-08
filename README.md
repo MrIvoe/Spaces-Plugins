@@ -1,10 +1,10 @@
 # Simple Fences Plugin Hub
 
-[![Validate plugin manifests](https://github.com/MrIvoe/Simple-Fences-Plugins/actions/workflows/validate-plugins.yml/badge.svg)](https://github.com/MrIvoe/Simple-Fences-Plugins/actions/workflows/validate-plugins.yml)
+[![Validate plugin manifests](https://github.com/MrIvoe/Spaces-Plugins/actions/workflows/validate-plugins.yml/badge.svg)](https://github.com/MrIvoe/Spaces-Plugins/actions/workflows/validate-plugins.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Repo stars](https://img.shields.io/github/stars/MrIvoe/Simple-Fences-Plugins?style=social)](https://github.com/MrIvoe/Simple-Fences-Plugins/stargazers)
+[![Repo stars](https://img.shields.io/github/stars/MrIvoe/Spaces-Plugins?style=social)](https://github.com/MrIvoe/Spaces-Plugins/stargazers)
 
-Simple-Fences-Plugins is the official plugin hub for IVOESimpleFences.
+Spaces-Plugins is the official plugin hub for Spaces.
 
 This repository provides:
 - production-ready and sample plugins
@@ -49,7 +49,7 @@ plugin-manifest.schema.json
 1. Copy `plugin-template/` to `plugins/<your-plugin>/`.
 2. Update `plugin.json` and source files.
 3. Validate manifests with `scripts/validate-plugin-manifests.ps1`.
-4. Integrate into IVOESimpleFences and test startup/settings persistence.
+4. Integrate into Spaces and test startup/settings persistence.
 
 ## Validation
 

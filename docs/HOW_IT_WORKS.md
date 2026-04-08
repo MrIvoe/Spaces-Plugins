@@ -1,8 +1,8 @@
-# How Simple-Fences-Plugins Works
+# How Spaces-Plugins Works
 
 This repository is the plugin hub for the main app:
-- Main app: IVOESimpleFences
-- Plugin hub: Simple-Fences-Plugins
+- Main app: Spaces
+- Plugin hub: Spaces-Plugins
 
 ## Architecture
 

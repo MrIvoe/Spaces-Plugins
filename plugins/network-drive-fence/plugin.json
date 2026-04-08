@@ -17,7 +17,7 @@
     "fence_content_provider",
     "settings_pages"
   ],
-  "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins",
+  "repository": "https://github.com/MrIvoe/Spaces-Plugins",
   "supportsHostedSummaryPanel": true,
   "hostedSummaryPanel": {
     "panelId": "community.network_drive_fence.summary",

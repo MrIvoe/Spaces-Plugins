@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/MrIvoe/Simple-Fences-Plugins/plugin-update-feed.schema.json",
+  "$id": "https://github.com/MrIvoe/Spaces-Plugins/plugin-update-feed.schema.json",
   "title": "SimpleFences Plugin Update Feed",
   "type": "object",
   "required": ["schemaVersion", "generatedAtUtc", "channel", "plugins"],

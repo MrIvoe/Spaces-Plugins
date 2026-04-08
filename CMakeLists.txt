@@ -6,20 +6,20 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ---------------------------------------------------------------------------
-# HOST_SDK_PATH must point to the IVOESimpleFences host SDK directory — the
+# HOST_SDK_PATH must point to the Spaces host SDK directory — the
 # directory that directly contains the 'extensions/' header folder.
 # Pass it at configure time:
-#   cmake -DHOST_SDK_PATH="C:/Dev/IVOESimpleFences/sdk" ...
+#   cmake -DHOST_SDK_PATH="C:/Dev/Spaces/sdk" ...
 # ---------------------------------------------------------------------------
 if(NOT DEFINED HOST_SDK_PATH OR HOST_SDK_PATH STREQUAL "")
     message(FATAL_ERROR
         "\n"
         "  HOST_SDK_PATH is required.\n"
-        "  It must point to the IVOESimpleFences host SDK directory that\n"
+        "  It must point to the Spaces host SDK directory that\n"
         "  contains the 'extensions/' header folder.\n"
         "\n"
         "  Example:\n"
-        "    cmake -DHOST_SDK_PATH=\"C:/Dev/IVOESimpleFences/sdk\" ..\n")
+        "    cmake -DHOST_SDK_PATH=\"C:/Dev/Spaces/sdk\" ..\n")
 endif()
 
 cmake_path(SET _sdk_path NORMALIZE "${HOST_SDK_PATH}")

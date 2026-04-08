@@ -30,7 +30,7 @@
     "read_settings",
     "write_settings"
   ],
-  "repository": "https://github.com/MrIvoe/Simple-Fences-Plugins",
+  "repository": "https://github.com/MrIvoe/Spaces-Plugins",
   "supportsHostedSummaryPanel": true,
   "hostedSummaryPanel": {
     "panelId": "community.template_plugin.summary",

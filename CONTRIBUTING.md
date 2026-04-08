@@ -1,4 +1,4 @@
-# Contributing to Simple-Fences-Plugins
+# Contributing to Spaces-Plugins
 
 Thanks for contributing.
 
@@ -12,7 +12,7 @@ Thanks for contributing.
 
 1. Validate plugin manifests.
 2. Keep capability declarations accurate.
-3. Test in IVOESimpleFences with startup and settings persistence checks.
+3. Test in Spaces with startup and settings persistence checks.
 4. Update [Changelog](docs/CHANGELOG.md).
 
 ## Validation Command

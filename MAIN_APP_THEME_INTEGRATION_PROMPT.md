@@ -1,6 +1,6 @@
 # Prompt: Main App Theme Integration (Single Theme System, Public and Safe)
 
-Use this prompt in the main app repository (IVOESimpleFences).
+Use this prompt in the main app repository (Spaces).
 
 You are implementing a production theme pipeline that is:
 
