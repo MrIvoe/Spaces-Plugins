@@ -17,6 +17,8 @@ A release may include:
 3. Update `docs/CHANGELOG.md`.
 4. Confirm compatibility ranges in manifests.
 5. Confirm update channel values are supported (`stable` or `preview`).
+6. Generate marketplace artifacts (`catalog.json` + plugin ZIP packages).
+7. Verify catalog schema alignment with `marketplace-catalog.schema.json`.
 
 ## Quality Checklist
 
@@ -38,9 +40,20 @@ A release may include:
 2. Create a tag: `vX.Y.Z`.
 3. Create GitHub release notes from changelog.
 4. Attach update feed artifacts if used.
+5. Attach marketplace artifacts:
+	- `dist/marketplace/catalog/catalog.json`
+	- `dist/marketplace/packages/*.zip`
 
 ## Post-Release
 
 1. Verify repository docs links.
 2. Track issues/regressions.
 3. Plan patch release if required.
+
+## Marketplace Build Command
+
+```powershell
+./scripts/build-marketplace-artifacts.ps1
+```
+
+See `docs/MARKETPLACE_PUBLISHING.md` for the full contract and CI flow.

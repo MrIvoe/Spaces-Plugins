@@ -1,0 +1,62 @@
+name: Build and publish marketplace artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      includePreview:
+        description: Include preview channel plugins
+        required: false
+        default: 'false'
+  push:
+    branches:
+      - master
+    tags:
+      - marketplace-v*
+
+permissions:
+  contents: write
+
+jobs:
+  build-marketplace:
+    name: Build marketplace packages and catalog
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate plugin manifests
+        shell: pwsh
+        run: ./scripts/validate-plugin-manifests.ps1
+
+      - name: Build marketplace artifacts
+        shell: pwsh
+        run: |
+          $isTag = "${{ startsWith(github.ref, 'refs/tags/') }}" -eq "true"
+          $base = "https://raw.githubusercontent.com/${{ github.repository }}/master/dist/marketplace/packages"
+          if ($isTag) {
+            $base = "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}"
+          }
+
+          $includePreview = "${{ github.event.inputs.includePreview }}" -eq "true"
+          if ($includePreview) {
+            ./scripts/build-marketplace-artifacts.ps1 -BaseDownloadUrl $base -IncludePreview
+          }
+          else {
+            ./scripts/build-marketplace-artifacts.ps1 -BaseDownloadUrl $base
+          }
+
+      - name: Upload marketplace build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketplace-dist
+          path: dist/marketplace/
+          if-no-files-found: error
+
+      - name: Publish release assets (tags only)
+        if: startsWith(github.ref, 'refs/tags/marketplace-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/marketplace/catalog/catalog.json
+            dist/marketplace/packages/*.zip
+          generate_release_notes: true

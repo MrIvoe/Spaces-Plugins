@@ -8,6 +8,7 @@ Use this page as the documentation landing sidebar/index.
 - [Plugins Offered](PLUGINS.md)
 - [Create A Plugin](CREATE_A_PLUGIN.md)
 - [Release Guide](RELEASE.md)
+- [Marketplace Publishing](MARKETPLACE_PUBLISHING.md)
 - [Changelog](CHANGELOG.md)
 
 ## Maintenance Docs

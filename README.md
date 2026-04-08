@@ -32,6 +32,7 @@ Start here:
 - [Plugins Offered](docs/PLUGINS.md)
 - [Create A Plugin](docs/CREATE_A_PLUGIN.md)
 - [Release Guide](docs/RELEASE.md)
+- [Marketplace Publishing](docs/MARKETPLACE_PUBLISHING.md)
 - [Host Integration](docs/HOST_INTEGRATION.md)
 - [Theme Contract](docs/THEME_CONTRACT.md)
 - [Changelog](docs/CHANGELOG.md)
@@ -60,6 +61,12 @@ Use:
 
 ```powershell
 ./scripts/validate-plugin-manifests.ps1
+```
+
+To build distributable marketplace artifacts (catalog + ZIP packages):
+
+```powershell
+./scripts/build-marketplace-artifacts.ps1
 ```
 
 ## Contributing

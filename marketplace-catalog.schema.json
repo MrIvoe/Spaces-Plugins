@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MrIvoe/Spaces-Plugins/marketplace-catalog.schema.json",
+  "title": "Spaces Marketplace Catalog",
+  "type": "object",
+  "required": [
+    "version",
+    "catalogVersion",
+    "generatedAtUtc",
+    "plugins"
+  ],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "catalogVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "generatedAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceRepository": { "type": "string", "format": "uri" },
+    "plugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "displayName",
+          "author",
+          "description",
+          "category",
+          "version",
+          "channel",
+          "downloadUrl",
+          "hash",
+          "compatibility",
+          "capabilities",
+          "supportsSettingsPage",
+          "restartRequired"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "displayName": { "type": "string" },
+          "author": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+          },
+          "channel": {
+            "type": "string",
+            "enum": ["stable", "preview"]
+          },
+          "downloadUrl": { "type": "string", "format": "uri" },
+          "hash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "hashAlgorithm": {
+            "type": "string",
+            "enum": ["sha256"]
+          },
+          "compatibility": {
+            "type": "object",
+            "required": ["hostVersion", "hostApiVersion"],
+            "properties": {
+              "hostVersion": {
+                "type": "object",
+                "required": ["min", "max"],
+                "properties": {
+                  "min": {
+                    "type": "string",
+                    "pattern": "^\\d+\\.\\d+\\.\\d+$"
+                  },
+                  "max": {
+                    "type": "string",
+                    "pattern": "^\\d+\\.\\d+\\.\\d+$"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "hostApiVersion": {
+                "type": "object",
+                "required": ["min", "max"],
+                "properties": {
+                  "min": {
+                    "type": "string",
+                    "pattern": "^\\d+\\.\\d+\\.\\d+$"
+                  },
+                  "max": {
+                    "type": "string",
+                    "pattern": "^\\d+\\.\\d+\\.\\d+$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "capabilities": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "supportsSettingsPage": { "type": "boolean" },
+          "restartRequired": { "type": "boolean" },
+          "settingsPageId": { "type": "string" },
+          "releaseNotesUrl": { "type": "string", "format": "uri" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}
