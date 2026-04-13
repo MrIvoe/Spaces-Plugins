@@ -7,12 +7,13 @@
 #include "extensions/SettingsSchema.h"
 #include "../../shared/PluginUiPatterns.h"
 
-#include <codecvt>
 #include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <locale>
 #include <sstream>
+
+#include <windows.h>
 
 namespace
 {
@@ -51,15 +52,15 @@ namespace
         return L"misc";
     }
 
+
     std::string ToUtf8(const std::wstring& text)
     {
         if (text.empty())
-        {
             return {};
-        }
-
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        return converter.to_bytes(text);
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, text.data(), (int)text.size(), nullptr, 0, nullptr, nullptr);
+        std::string result(size_needed, 0);
+        WideCharToMultiByte(CP_UTF8, 0, text.data(), (int)text.size(), &result[0], size_needed, nullptr, nullptr);
+        return result;
     }
 
     std::string EscapeJson(const std::wstring& text)
